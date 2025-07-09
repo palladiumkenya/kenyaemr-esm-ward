@@ -1,34 +1,59 @@
 import { OverflowMenuItem } from '@carbon/react';
-import { DataTable, TableContainer, Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
+import {
+  DataTable,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeader,
+  TableBody,
+  TableCell,
+} from '@carbon/react';
 import { OverflowMenu } from '@carbon/react';
+import { formatDatetime, formatPartialDate, parseDate, useAppContext } from '@openmrs/esm-framework';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { WardViewContext } from '../types';
+import { DataTableSkeleton } from '@carbon/react';
+import { EmptyState, ErrorState } from './table-state-components';
+import { getOpenmrsId } from '../ward-view/ward-view.resource';
+import dayjs from 'dayjs';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();
+  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
+  const { inpatientRequests, isLoading, error } = wardPatientGroupDetails?.inpatientRequestResponse ?? {};
 
   const headers = [
-    { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
+    { key: 'admissionDate', header: t('dateQueued', 'Date Queued') },
     { key: 'idNumber', header: t('idNumber', 'ID Number') },
     { key: 'name', header: t('name', 'Name') },
     { key: 'gender', header: t('gender', 'Gender') },
     { key: 'age', header: t('age', 'Age') },
     { key: 'bedNumber', header: t('bedNumber', 'Bed Number') },
-    { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
+    { key: 'daysAdmitted', header: t('durationOnWard', 'Days In Queue') },
     { key: 'action', header: t('action', 'Action') },
   ];
 
   const tableRows = useMemo(() => {
-    return [].map((patient, index) => {
+    return inpatientRequests?.map((request, index) => {
+      const admissionDate = request.dispositionEncounter?.encounterDatetime
+        ? formatDatetime(parseDate(request.dispositionEncounter?.encounterDatetime))
+        : '--';
+      const daysAdmitted = request.dispositionEncounter?.encounterDatetime
+        ? dayjs()
+            .startOf('day')
+            .diff(dayjs(request.dispositionEncounter?.encounterDatetime).startOf('day'), 'days')
+        : '--';
       return {
-        id: '--',
-        admissionDate: '--',
-        idNumber: '--',
-        name: '--',
-        gender: '--',
-        age: '--',
+        id: request?.patient?.uuid ?? index,
+        admissionDate,
+        idNumber: getOpenmrsId(request.patient?.identifiers ?? []) ?? '--',
+        name: request?.patient?.person?.display ?? '--',
+        gender: request?.patient?.person?.gender ?? '--',
+        age: request?.patient?.person?.age ?? '--',
         bedNumber: '--',
-        daysAdmitted: '--',
+        daysAdmitted,
         action: (
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem
@@ -47,7 +72,12 @@ const AwaitingAdmissionPatients = () => {
         ),
       };
     });
-  }, []);
+  }, [inpatientRequests]);
+
+  if (isLoading) return <DataTableSkeleton />;
+  if (error) return <ErrorState error={error} />;
+  if (!inpatientRequests || !inpatientRequests.length)
+    return <EmptyState message={t('noPatientInAdmisionQueue', 'No patients in admission queue')} />;
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
       {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (

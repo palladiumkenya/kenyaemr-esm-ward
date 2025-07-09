@@ -12,6 +12,7 @@ import {
 } from '@carbon/react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EmptyState } from './table-state-components';
 
 const DischargePatients = () => {
   const { t } = useTranslation();
@@ -26,9 +27,9 @@ const DischargePatients = () => {
     { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
     { key: 'action', header: t('action', 'Action') },
   ];
-
+  const patients = [];
   const tableRows = useMemo(() => {
-    return [].map((patient, index) => {
+    return patients.map((patient, index) => {
       return {
         id: '--',
         admissionDate: '--',
@@ -56,7 +57,10 @@ const DischargePatients = () => {
         ),
       };
     });
-  }, []);
+  }, [patients]);
+
+  if (!patients.length) return <EmptyState message={t('noDischargepatients', 'No Discharge patients')} />;
+
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
       {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (

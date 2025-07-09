@@ -1,6 +1,18 @@
-import { OverflowMenu, OverflowMenuItem, DataTable, TableContainer, Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
+import {
+  OverflowMenu,
+  OverflowMenuItem,
+  DataTable,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeader,
+  TableBody,
+  TableCell,
+} from '@carbon/react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EmptyState } from './table-state-components';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
@@ -16,8 +28,9 @@ const DischargeInPatients = () => {
     { key: 'action', header: t('action', 'Action') },
   ];
 
+  const patients = [];
   const tableRows = useMemo(() => {
-    return [].map((patient, index) => {
+    return patients.map((patient, index) => {
       return {
         id: '--',
         admissionDate: '--',
@@ -45,7 +58,10 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, []);
+  }, [patients]);
+
+  if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
+
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
       {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (

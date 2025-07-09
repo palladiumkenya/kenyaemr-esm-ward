@@ -1,6 +1,8 @@
 import {
   DataTable,
   DataTableSkeleton,
+  OverflowMenu,
+  OverflowMenuItem,
   Table,
   TableBody,
   TableCell,
@@ -10,14 +12,12 @@ import {
   TableRow,
 } from '@carbon/react';
 import { formatDatetime, parseDate, useAppContext } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WardPatient, WardViewContext } from '../types';
-import WardPatientTimeOnWard from '../ward-patient-card/row-elements/ward-patient-time-on-ward.component';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
-import { OverflowMenu } from '@carbon/react';
-import { OverflowMenuItem } from '@carbon/react';
-
+import { EmptyState } from './table-state-components';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -30,7 +30,7 @@ const AdmittedPatients = () => {
     { key: 'gender', header: t('gender', 'Gender') },
     { key: 'age', header: t('age', 'Age') },
     { key: 'bedNumber', header: t('bedNumber', 'Bed Number') },
-    { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
+    { key: 'daysAdmitted', header: t('durationOnWard', 'Days In Ward') },
     { key: 'action', header: t('action', 'Action') },
   ];
 
@@ -65,17 +65,13 @@ const AdmittedPatients = () => {
   const tableRows = useMemo(() => {
     return patients.map((patient, index) => {
       const { encounterAssigningToCurrentInpatientLocation } = patient.inpatientAdmission ?? {};
+
       const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
         ? formatDatetime(parseDate(encounterAssigningToCurrentInpatientLocation!.encounterDatetime!))
         : '--';
-      const daysAdmitted = encounterAssigningToCurrentInpatientLocation?.encounterDatetime ? (
-        <WardPatientTimeOnWard
-          encounterAssigningToCurrentInpatientLocation={encounterAssigningToCurrentInpatientLocation}
-          withDescription={false}
-        />
-      ) : (
-        '--'
-      );
+      const daysAdmitted = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
+        ? dayjs(encounterAssigningToCurrentInpatientLocation?.encounterDatetime).diff(dayjs(), 'days')
+        : '--';
       return {
         id: patient.patient?.uuid ?? index,
         admissionDate,
@@ -106,6 +102,8 @@ const AdmittedPatients = () => {
   }, [patients]);
 
   if (isLoading) return <DataTableSkeleton />;
+  if (!patients.length)
+    return <EmptyState message={t('noAdmittedPatientsinCurrentward', 'No admitted patients in the current ward')} />;
 
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>

@@ -1,11 +1,8 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
-import styles from './ward-view.scss';
-import { useTranslation } from 'react-i18next';
+import { ContentSwitcher, Switch } from '@carbon/react';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
-import { Tile } from '@carbon/react';
-import { Search } from '@carbon/react';
-import { ContentSwitcher } from '@carbon/react';
-import { Switch } from '@carbon/react';
+import React, { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import styles from './ward-view.scss';
 
 type WardViewContentWrapperProps = {
   cardView: React.ReactNode;
@@ -17,7 +14,7 @@ const WardViewContentWrapper: FC<WardViewContentWrapperProps> = ({ cardView, tab
   return (
     <>
       <div className={styles.wrapperContainer}>
-        <CardHeader title={t('wardOccupancy', 'Ward Occupancy')}>
+        <CardHeader title={t('wardPatients', 'Ward Patients')}>
           <ContentSwitcher
             onChange={({ index, name, text }) => {
               setSelectedView(index);
@@ -29,7 +26,6 @@ const WardViewContentWrapper: FC<WardViewContentWrapperProps> = ({ cardView, tab
             <Switch name="cards" text={t('cardView', 'Card')} />
           </ContentSwitcher>
         </CardHeader>
-        {/* <Search /> */}
         {selectedView === 1 && cardView}
         {selectedView === 0 && tableView}
       </div>
