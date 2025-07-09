@@ -21,7 +21,7 @@
 
     >div {
       break-inside: avoid;
-      margin-bottom: 10px;
+      margin: layout.$spacing-03;
     }
   }
 }

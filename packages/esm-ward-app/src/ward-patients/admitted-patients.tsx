@@ -1,72 +1,38 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
-import { useAppContext } from '@openmrs/esm-framework';
-import React, { FC, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { WardPatient, WardViewContext } from '../../types';
-import { bedLayoutToBed, getOpenmrsId } from '../ward-view.resource';
-import { Layer } from '@carbon/react';
-import { DataTableSkeleton } from '@carbon/react';
-import styles from '../linelist-wards/linelist-wards.scss';
 import {
   DataTable,
-  TableContainer,
+  DataTableSkeleton,
   Table,
-  TableHead,
-  TableRow,
-  TableHeader,
   TableBody,
   TableCell,
-  Pagination,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@carbon/react';
+import { formatDatetime, parseDate, useAppContext } from '@openmrs/esm-framework';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { WardPatient, WardViewContext } from '../types';
+import WardPatientTimeOnWard from '../ward-patient-card/row-elements/ward-patient-time-on-ward.component';
+import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
+import { OverflowMenu } from '@carbon/react';
+import { OverflowMenuItem } from '@carbon/react';
 
-const WardOccupancyTable = () => {
+const AdmittedPatients = () => {
+  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
+  const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
   const { t } = useTranslation();
 
-  return (
-    <Tabs onTabCloseRequest={() => {}}>
-      <TabList scrollDebounceWait={200}>
-        <Tab>{t('awaitingAdmision', 'Awaiting Admission')}</Tab>
-        <Tab>{t('admitted', 'Admitted')}</Tab>
-        <Tab>{t('dischargeIn', 'Discharge In')}</Tab>
-        <Tab>{t('discharge', 'Discharge')}</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>
-          <DatatableReusable />
-        </TabPanel>
-        <TabPanel>
-          <DatatableReusable />
-        </TabPanel>
-        <TabPanel>
-          <DatatableReusable />
-        </TabPanel>
-        <TabPanel>
-          <DatatableReusable />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
-};
-
-export default WardOccupancyTable;
-
-type Props = {};
-
-const DatatableReusable: FC<Props> = () => {
-  const { t } = useTranslation();
   const headers = [
-    { key: 'admissiondate', header: t('admissionDate', 'Admission Date') },
+    { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
     { key: 'idNumber', header: t('idNumber', 'ID Number') },
     { key: 'name', header: t('name', 'Name') },
     { key: 'gender', header: t('gender', 'Gender') },
     { key: 'age', header: t('age', 'Age') },
     { key: 'bedNumber', header: t('bedNumber', 'Bed Number') },
-    { key: 'daysAdmitted', header: t('daysAdmitted', 'Days admitted') },
+    { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
     { key: 'action', header: t('action', 'Action') },
   ];
-
-  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
-  const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
 
   const patients = useMemo(() => {
     return (
@@ -98,33 +64,53 @@ const DatatableReusable: FC<Props> = () => {
 
   const tableRows = useMemo(() => {
     return patients.map((patient, index) => {
+      const { encounterAssigningToCurrentInpatientLocation } = patient.inpatientAdmission ?? {};
+      const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
+        ? formatDatetime(parseDate(encounterAssigningToCurrentInpatientLocation!.encounterDatetime!))
+        : '--';
+      const daysAdmitted = encounterAssigningToCurrentInpatientLocation?.encounterDatetime ? (
+        <WardPatientTimeOnWard
+          encounterAssigningToCurrentInpatientLocation={encounterAssigningToCurrentInpatientLocation}
+          withDescription={false}
+        />
+      ) : (
+        '--'
+      );
       return {
         id: patient.patient?.uuid ?? index,
-        admissiondate: '--',
+        admissionDate,
         idNumber: getOpenmrsId(patient.patient?.identifiers ?? []) ?? '--',
         name: patient.patient?.person?.display ?? '--',
         gender: patient.patient?.person?.gender ?? '--',
         age: patient.patient?.person?.age ?? '--',
         bedNumber: patient.bed?.bedNumber ?? '--',
-        daysAdmitted: '--',
-        action: '--',
+        daysAdmitted,
+        action: (
+          <OverflowMenu size={'sm'} flipped>
+            <OverflowMenuItem
+              itemText={t('tranfer', 'Tranfer')}
+              //   onClick={() => handleClaimAction(row.id, 'retry')}
+            />
+            <OverflowMenuItem
+              itemText={t('bedSwap', 'Bed Swap')}
+              //   onClick={() => handleClaimAction(row.id, 'update')}
+            />
+            <OverflowMenuItem
+              itemText={t('discharge', 'Discharge')}
+              //   onClick={() => handleClaimAction(row.id, 'update')}
+            />
+          </OverflowMenu>
+        ),
       };
     });
   }, [patients]);
 
-  console.log(patients);
-
-  if (isLoading)
-    return (
-      <Layer className={styles.tableContainer}>
-        <DataTableSkeleton />
-      </Layer>
-    );
+  if (isLoading) return <DataTableSkeleton />;
 
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
       {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (
-        <TableContainer className={styles.claimsTable}>
+        <TableContainer>
           <Table {...getTableProps()} aria-label="sample table">
             <TableHead>
               <TableRow>
@@ -175,3 +161,5 @@ const DatatableReusable: FC<Props> = () => {
     </DataTable>
   );
 };
+
+export default AdmittedPatients;

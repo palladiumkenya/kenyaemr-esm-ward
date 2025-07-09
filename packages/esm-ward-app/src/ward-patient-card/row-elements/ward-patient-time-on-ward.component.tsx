@@ -8,10 +8,12 @@ dayjs.extend(duration);
 
 export interface WardPatientTimeOnWardProps {
   encounterAssigningToCurrentInpatientLocation: Encounter;
+  withDescription?: boolean;
 }
 
 const WardPatientTimeOnWard: React.FC<WardPatientTimeOnWardProps> = ({
   encounterAssigningToCurrentInpatientLocation,
+  withDescription = true,
 }) => {
   const { t } = useTranslation();
 
@@ -67,8 +69,9 @@ const WardPatientTimeOnWard: React.FC<WardPatientTimeOnWardProps> = ({
   if (parts.length === 0) {
     return null;
   }
-
-  return <div>{t('timeOnWard', 'Time on this ward: {{timeOnWard}}', { timeOnWard: parts.join(' ') })}</div>;
+  if (withDescription)
+    return <div>{t('timeOnWard', 'Time on this ward: {{timeOnWard}}', { timeOnWard: parts.join(' ') })}</div>;
+  return <>{parts.join(' ')}</>;
 };
 
 export default WardPatientTimeOnWard;

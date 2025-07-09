@@ -13,7 +13,7 @@ import DefaultWardBeds from './default-ward-beds.component';
 import DefaultWardPatientCardHeader from './default-ward-patient-card-header.component';
 import DefaultWardPendingPatients from './default-ward-pending-patients.component';
 import DefaultWardUnassignedPatients from './default-ward-unassigned-patients.component';
-import WardOccupancyTable from '../linelist-wards/WardOccupancyTable';
+import WardPatientsTable from '../../ward-patients/ward-patients-table';
 
 const DefaultWardView = () => {
   const { location } = useWardLocation();
@@ -44,7 +44,7 @@ const DefaultWardView = () => {
       {/* <WardViewHeader {...{ wardPendingPatients }} /> */}
       <WardViewContentWrapper
         cardView={<Ward {...{ wardBeds, wardUnassignedPatients }} />}
-        tableView={<WardOccupancyTable />}
+        tableView={<WardPatientsTable />}
       />
     </>
   );
