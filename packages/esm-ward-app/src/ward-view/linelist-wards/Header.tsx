@@ -4,9 +4,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './linelist-wards.scss';
 
-interface HeaderProps {}
+interface HeaderProps {
+  title: string;
+}
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC<HeaderProps> = ({ title }) => {
   const { t } = useTranslation();
 
   return (
@@ -15,7 +17,7 @@ const Header: React.FC<HeaderProps> = () => {
         <HomePictogram className={styles.icon} />
         <div className={styles.pageLabels}>
           <p>{t('locations', 'Locations')}</p>
-          <p className={styles.pageName}>{t('wards', 'Wards')}</p>
+          <p className={styles.pageName}>{title}</p>
         </div>
       </div>
     </div>

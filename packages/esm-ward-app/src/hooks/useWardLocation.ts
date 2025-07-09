@@ -1,6 +1,11 @@
 import { type Location, useSession } from '@openmrs/esm-framework';
-import { useParams } from 'react-router-dom';
+import { last } from 'lodash-es';
 import useLocation from './useLocation';
+
+const isUUID = (value?: string) => {
+  const regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
+  return regex.test(value);
+};
 
 export default function useWardLocation(): {
   location: Location;
@@ -8,7 +13,15 @@ export default function useWardLocation(): {
   errorFetchingLocation: Error | undefined;
   invalidLocation: boolean;
 } {
-  const { locationUuid: locationUuidFromUrl } = useParams();
+  // useParams not retriving uuid since its rendered on extension slot and lacks route context
+  // UseLocation also throwing and expeption
+  const { pathname } = window.location;
+  const segement = last(pathname.split('/'));
+  let locationUuidFromUrl: string;
+  if (isUUID(segement)) {
+    locationUuidFromUrl = segement;
+  }
+
   const { sessionLocation } = useSession();
   const {
     data: locationResponse,

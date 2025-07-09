@@ -1,21 +1,15 @@
 import { Layer } from '@carbon/react';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import styles from './linelist-wards.scss';
-import { useTranslation } from 'react-i18next';
 import { Tile } from '@carbon/react';
-const Metrics = () => {
-  const { t } = useTranslation();
-  const cards = useMemo(() => {
-    return [
-      { label: t('numberOfBeds', 'Number of Beds'), value: '40' },
-      { label: t('admittedPatients', 'Admitted Patients'), value: '150' },
-      { label: t('freebeds', 'Free Beds'), value: '20' },
-      { label: t('bedOccupancy', 'Bed Occupancy %'), value: '50%' },
-    ];
-  }, [t]);
+
+type MetricsProps = {
+  metrics: Array<{ label: string; value: string }>;
+};
+const Metrics: FC<MetricsProps> = ({ metrics }) => {
   return (
     <Layer className={styles.metricsContainer}>
-      {cards.map(({ label, value }) => (
+      {metrics.map(({ label, value }) => (
         <Tile className={styles.metricCard}>
           <strong>{label}</strong>
           <h4 className={styles.metricValue}>{value ?? '--'}</h4>
