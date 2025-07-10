@@ -14,6 +14,7 @@ import DefaultWardPatientCardHeader from './default-ward-patient-card-header.com
 import DefaultWardPendingPatients from './default-ward-pending-patients.component';
 import DefaultWardUnassignedPatients from './default-ward-unassigned-patients.component';
 import WardPatientsTable from '../../ward-patients/ward-patients-table';
+import WardViewHeader from '../../ward-view-header/ward-view-header.component';
 
 const DefaultWardView = () => {
   const { location } = useWardLocation();
@@ -21,12 +22,15 @@ const DefaultWardView = () => {
   const wardPatientGroupDetails = useWardPatientGrouping();
   const cards = useMemo(() => {
     return [
-      { label: t('awaitingAdmission', 'Awaiting Admission'), value: '40' },
-      { label: t('admitted', 'Admitted'), value: '150' },
+      {
+        label: t('awaitingAdmission', 'Awaiting Admission'),
+        value: `${wardPatientGroupDetails.inpatientRequestResponse?.inpatientRequests?.length ?? 0}`,
+      },
+      { label: t('admitted', 'Admitted'), value: `${wardPatientGroupDetails?.totalPatientsCount}` },
       { label: t('dischargIn', 'Discaharg In'), value: '20' },
       { label: t('discharge', 'Discharge'), value: '50%' },
     ];
-  }, [t]);
+  }, [t, wardPatientGroupDetails]);
   useDefineAppContext<WardViewContext>('ward-view-context', {
     wardPatientGroupDetails,
     WardPatientHeader: DefaultWardPatientCardHeader,

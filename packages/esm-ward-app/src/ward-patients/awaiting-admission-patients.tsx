@@ -10,14 +10,16 @@ import {
   TableCell,
 } from '@carbon/react';
 import { OverflowMenu } from '@carbon/react';
-import { formatDatetime, formatPartialDate, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, formatPartialDate, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WardViewContext } from '../types';
+import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { DataTableSkeleton } from '@carbon/react';
 import { EmptyState, ErrorState } from './table-state-components';
 import { getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
+import AdmitPatientButton from '../ward-workspace/admit-patient-button.component';
+import { useAdmissionRequestsWorkspaceContext } from '../ward-workspace/admission-request-workspace/admission-requests-context';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();
@@ -35,6 +37,17 @@ const AwaitingAdmissionPatients = () => {
     { key: 'action', header: t('action', 'Action') },
   ];
 
+  const launchPatientTransferForm = (wardPatient: WardPatient) => {
+    launchWorkspace<WardPatientWorkspaceProps>('patient-transfer-request-workspace', {
+      wardPatient,
+    });
+  };
+
+  const launchCancelAdmissionForm = (wardPatient: WardPatient) => {
+    launchWorkspace<WardPatientWorkspaceProps>('cancel-admission-request-workspace', {
+      wardPatient,
+    });
+  };
   const tableRows = useMemo(() => {
     return inpatientRequests?.map((request, index) => {
       const admissionDate = request.dispositionEncounter?.encounterDatetime
@@ -45,6 +58,15 @@ const AwaitingAdmissionPatients = () => {
             .startOf('day')
             .diff(dayjs(request.dispositionEncounter?.encounterDatetime).startOf('day'), 'days')
         : '--';
+      const wardPatient = {
+        patient: request.patient,
+        visit: request.visit,
+        bed: null,
+        inpatientRequest: request,
+        inpatientAdmission: null,
+      };
+      const isTransfer = wardPatient.inpatientRequest.dispositionType == 'TRANSFER';
+
       return {
         id: request?.patient?.uuid ?? index,
         admissionDate,
@@ -57,17 +79,18 @@ const AwaitingAdmissionPatients = () => {
         action: (
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem
-              itemText={t('queueToAnother', 'Queue to another')}
-              //   onClick={() => handleClaimAction(row.id, 'retry')}
+              itemText={
+                isTransfer ? t('transferElsewhere', 'Transfer elsewhere') : t('admitElsewhere', 'Admit elsewhere')
+              }
+              onClick={() => launchPatientTransferForm(wardPatient)}
             />
-            <OverflowMenuItem
-              itemText={t('admitPatient', 'Admit Patient')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
+            <AdmitPatientButton
+              wardPatient={wardPatient}
+              dispositionType={wardPatient.inpatientRequest.dispositionType}
+              onAdmitPatientSuccess={() => {}}
+              component="menu"
             />
-            <OverflowMenuItem
-              itemText={t('cancel', 'Cancel')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
-            />
+            <OverflowMenuItem itemText={t('cancel', 'Cancel')} onClick={() => launchCancelAdmissionForm(wardPatient)} />
           </OverflowMenu>
         ),
       };
