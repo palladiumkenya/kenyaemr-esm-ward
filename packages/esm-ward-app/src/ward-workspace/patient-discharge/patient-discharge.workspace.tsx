@@ -51,6 +51,8 @@ export default function PatientDischargeWorkspace(props: WardPatientWorkspacePro
   }, [createEncounter, wardPatient, emrConfiguration, t, closeWorkspaceWithSavedChanges, wardPatientGroupDetails]);
 
   if (!wardPatientGroupDetails) return <></>;
+  if (!wardPatient?.visit) return <InlineNotification kind="error" title={t('noVisit', 'No visit found')} />;
+
   return (
     <div className={styles.workspaceContent}>
       <div className={styles.patientWorkspaceBanner}>

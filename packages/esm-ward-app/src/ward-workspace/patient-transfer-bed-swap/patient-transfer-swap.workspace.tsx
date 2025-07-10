@@ -19,10 +19,10 @@ export default function PatientTransferAndSwapWorkspace({
   defaultTransfersection,
   withContentSwitcher = true,
   ...props
-}: WardPatientWorkspaceProps) {
+}: WardPatientWorkspaceProps & { withContentSwitcher?: boolean; defaultTransfersection?: TransferSectionValues }) {
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] = useState<TransferSectionValues>(
-    (defaultTransfersection as TransferSectionValues) ?? TransferSection.TRANSFER,
+    defaultTransfersection ?? TransferSection.TRANSFER,
   );
   const isBedManagementModuleInstalled = useFeatureFlag('bedmanagement-module');
 

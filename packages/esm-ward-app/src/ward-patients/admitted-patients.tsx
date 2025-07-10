@@ -86,9 +86,7 @@ const AdmittedPatients = () => {
             <OverflowMenuItem
               itemText={t('tranfer', 'Tranfer')}
               onClick={() =>
-                launchWorkspace<
-                  Pick<WardPatientWorkspaceProps, 'wardPatient' | 'defaultTransfersection' | 'withContentSwitcher'>
-                >('patient-transfer-swap-workspace', {
+                launchWorkspace('patient-transfer-swap-workspace', {
                   workspaceTitle: 'Trasfer',
                   wardPatient: patient,
                   withContentSwitcher: false,
@@ -99,9 +97,7 @@ const AdmittedPatients = () => {
             <OverflowMenuItem
               itemText={t('bedSwap', 'Bed Swap')}
               onClick={() =>
-                launchWorkspace<
-                  Pick<WardPatientWorkspaceProps, 'wardPatient' | 'defaultTransfersection' | 'withContentSwitcher'>
-                >('patient-transfer-swap-workspace', {
+                launchWorkspace('patient-transfer-swap-workspace', {
                   workspaceTitle: 'Bed Swap',
                   wardPatient: patient,
                   withContentSwitcher: false,
@@ -111,7 +107,7 @@ const AdmittedPatients = () => {
             />
             <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
+              onClick={() => launchWorkspace('patient-discharge-workspace', { wardPatient: patient })}
             />
           </OverflowMenu>
         ),
