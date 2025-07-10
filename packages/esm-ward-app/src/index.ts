@@ -63,7 +63,7 @@ export const patientTransferAndSwapWorkspace = getAsyncLifecycle(
 
 // t('discharge', 'Discharge')
 export const patientDischargeWorkspace = getAsyncLifecycle(
-  () => import('./ward-workspace/patient-discharge/patient-discharge.workspace'),
+  () => import('./ward-workspace/kenya-emr-patient-discharge/patient-discharge.workspace'),
   options,
 );
 

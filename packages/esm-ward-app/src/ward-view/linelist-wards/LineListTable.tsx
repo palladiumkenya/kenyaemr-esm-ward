@@ -20,6 +20,7 @@ import {
 import { Search } from '@carbon/react';
 import { AdmissionLocationFetchResponse } from '../../types';
 import { Tile } from '@carbon/react';
+import { EmptyState } from '../../ward-patients/table-state-components';
 const LineListTable = () => {
   const {
     admissionLocations,
@@ -53,6 +54,7 @@ const LineListTable = () => {
   const tableRows = useMemo(() => {
     return admissionLocations.map((location) => {
       const url = '${openmrsSpaBase}/home/ward/${locationUuid}';
+
       return {
         id: location.ward.uuid,
         ward: location.ward.display,
@@ -64,6 +66,7 @@ const LineListTable = () => {
         ),
         freebeds: location.totalBeds - location.occupiedBeds,
         bedOccupancy: calculateOccupancy(location),
+        // pendingOut:
       };
     });
   }, [admissionLocations, calculateOccupancy]);
@@ -116,6 +119,7 @@ const LineListTable = () => {
                 })}
               </TableBody>
             </Table>
+            {rows.length === 0 && <EmptyState message={t('noWards', 'No wards found')} />}
             {paginated && !isLoading && (
               <Pagination
                 forwardText=""

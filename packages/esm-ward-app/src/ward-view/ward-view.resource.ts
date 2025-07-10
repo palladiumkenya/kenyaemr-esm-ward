@@ -222,7 +222,7 @@ export function useWardConfig(locationUuid: string): WardDefinition {
 }
 
 export const getOpenmrsId = (identifiers: Array<PatientIdentifier>) => {
-  // const OPENMRS_ID_TYPE = 'dfacd928-0370-4315-99d7-6ec1c9f7ae76'; //kenyaemr
-  const OPENMRS_ID_TYPE = '05a29f94-c0ed-11e2-94be-8c13b969e334'; //openmrs
+  const OPENMRS_ID_TYPE = 'dfacd928-0370-4315-99d7-6ec1c9f7ae76'; //kenyaemr
+  // const OPENMRS_ID_TYPE = '05a29f94-c0ed-11e2-94be-8c13b969e334'; //openmrs
   return identifiers.find((id) => id.identifierType.uuid === OPENMRS_ID_TYPE)?.identifier ?? null;
 };

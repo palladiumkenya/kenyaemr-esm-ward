@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
+import { mutate } from 'swr';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -107,7 +108,12 @@ const AdmittedPatients = () => {
             />
             <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
-              onClick={() => launchWorkspace('patient-discharge-workspace', { wardPatient: patient })}
+              onClick={() => {
+                launchWorkspace('patient-discharge-workspace', {
+                  wardPatient: patient,
+                  patientUuid: patient.patient.uuid,
+                });
+              }}
             />
           </OverflowMenu>
         ),

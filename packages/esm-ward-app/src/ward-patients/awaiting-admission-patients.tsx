@@ -1,25 +1,15 @@
-import { OverflowMenuItem } from '@carbon/react';
 import {
-  DataTable,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
+  DataTable, DataTableSkeleton, OverflowMenu, OverflowMenuItem, Table, TableBody,
+  TableCell, TableContainer, TableHead, TableHeader, TableRow
 } from '@carbon/react';
-import { OverflowMenu } from '@carbon/react';
-import { formatDatetime, formatPartialDate, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
-import { DataTableSkeleton } from '@carbon/react';
-import { EmptyState, ErrorState } from './table-state-components';
 import { getOpenmrsId } from '../ward-view/ward-view.resource';
-import dayjs from 'dayjs';
 import AdmitPatientButton from '../ward-workspace/admit-patient-button.component';
-import { useAdmissionRequestsWorkspaceContext } from '../ward-workspace/admission-request-workspace/admission-requests-context';
+import { EmptyState, ErrorState } from './table-state-components';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();

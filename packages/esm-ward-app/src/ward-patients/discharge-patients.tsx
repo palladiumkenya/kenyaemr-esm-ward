@@ -13,9 +13,12 @@ import {
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from './table-state-components';
+import { useAppContext } from '@openmrs/esm-framework';
+import { WardViewContext } from '../types';
 
 const DischargePatients = () => {
   const { t } = useTranslation();
+  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
 
   const headers = [
     { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
