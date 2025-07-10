@@ -11,11 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { formatDatetime, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WardPatient, WardViewContext } from '../types';
+import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
 const AdmittedPatients = () => {
@@ -85,11 +85,29 @@ const AdmittedPatients = () => {
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem
               itemText={t('tranfer', 'Tranfer')}
-              //   onClick={() => handleClaimAction(row.id, 'retry')}
+              onClick={() =>
+                launchWorkspace<
+                  Pick<WardPatientWorkspaceProps, 'wardPatient' | 'defaultTransfersection' | 'withContentSwitcher'>
+                >('patient-transfer-swap-workspace', {
+                  workspaceTitle: 'Trasfer',
+                  wardPatient: patient,
+                  withContentSwitcher: false,
+                  defaultTransfersection: 'transfer',
+                })
+              }
             />
             <OverflowMenuItem
               itemText={t('bedSwap', 'Bed Swap')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
+              onClick={() =>
+                launchWorkspace<
+                  Pick<WardPatientWorkspaceProps, 'wardPatient' | 'defaultTransfersection' | 'withContentSwitcher'>
+                >('patient-transfer-swap-workspace', {
+                  workspaceTitle: 'Bed Swap',
+                  wardPatient: patient,
+                  withContentSwitcher: false,
+                  defaultTransfersection: 'bed-swap',
+                })
+              }
             />
             <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}

@@ -118,7 +118,7 @@ export default function PatientBedSwapForm({
       t,
       wardPatientGroupDetails,
       closeWorkspaceWithSavedChanges,
-      visit.uuid,
+      visit?.uuid,
     ],
   );
 
@@ -127,6 +127,7 @@ export default function PatientBedSwapForm({
   }, []);
 
   if (!wardPatientGroupDetails) return <></>;
+  if (!visit) return <InlineNotification kind="error" title={t('noVisit', 'No visit found')} />;
   return (
     <Form
       onSubmit={handleSubmit(onSubmit, onError)}

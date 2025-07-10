@@ -15,9 +15,15 @@ const TransferSection = {
 
 type TransferSectionValues = (typeof TransferSection)[keyof typeof TransferSection];
 
-export default function PatientTransferAndSwapWorkspace(props: WardPatientWorkspaceProps) {
+export default function PatientTransferAndSwapWorkspace({
+  defaultTransfersection,
+  withContentSwitcher = true,
+  ...props
+}: WardPatientWorkspaceProps) {
   const { t } = useTranslation();
-  const [selectedSection, setSelectedSection] = useState<TransferSectionValues>(TransferSection.TRANSFER);
+  const [selectedSection, setSelectedSection] = useState<TransferSectionValues>(
+    (defaultTransfersection as TransferSectionValues) ?? TransferSection.TRANSFER,
+  );
   const isBedManagementModuleInstalled = useFeatureFlag('bedmanagement-module');
 
   return (
@@ -25,7 +31,7 @@ export default function PatientTransferAndSwapWorkspace(props: WardPatientWorksp
       <div className={styles.patientWorkspaceBanner}>
         <WardPatientWorkspaceBanner wardPatient={props?.wardPatient} />
       </div>
-      {isBedManagementModuleInstalled && (
+      {isBedManagementModuleInstalled && withContentSwitcher && (
         <div className={styles.contentSwitcherWrapper}>
           <h2 className={styles.productiveHeading02}>{t('typeOfTransfer', 'Type of transfer')}</h2>
           <div className={styles.contentSwitcher}>
