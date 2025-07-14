@@ -11,13 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WardPatient, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
+import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { Pagination } from '@carbon/react';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -69,8 +71,11 @@ const AdmittedPatients = () => {
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed]);
 
+  const [pageSize, setPageSize] = useState(5);
+  const { paginated, results, totalPages, currentPage, goTo } = usePagination(patients, pageSize);
+  const { pageSizes } = usePaginationInfo(pageSize, totalPages, currentPage, results.length);
   const tableRows = useMemo(() => {
-    return patients.map((patient, index) => {
+    return results.map((patient, index) => {
       const { encounterAssigningToCurrentInpatientLocation } = patient.inpatientAdmission ?? {};
 
       const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
@@ -141,7 +146,7 @@ const AdmittedPatients = () => {
         ),
       };
     });
-  }, [patients]);
+  }, [results]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (!patients.length)
@@ -179,23 +184,18 @@ const AdmittedPatients = () => {
               })}
             </TableBody>
           </Table>
-          {/* {paginated && !isLoading && (
+          {paginated && !isLoading && (
             <Pagination
-              forwardText=""
-              backwardText=""
               page={currentPage}
-              pageSize={currPageSize}
+              pageSize={pageSize}
               pageSizes={pageSizes}
-              totalItems={totalCount}
-              size={'sm'}
-              onChange={({ page: newPage, pageSize }) => {
-                if (newPage !== currentPage) {
-                  goTo(newPage);
-                }
-                setCurrPageSize(pageSize);
+              totalItems={(patients ?? []).length}
+              onChange={({ page, pageSize }) => {
+                goTo(page);
+                setPageSize(pageSize);
               }}
             />
-          )} */}
+          )}
         </TableContainer>
       )}
     </DataTable>

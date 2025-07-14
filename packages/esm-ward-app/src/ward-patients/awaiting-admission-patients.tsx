@@ -1,20 +1,34 @@
 import {
-  DataTable, DataTableSkeleton, OverflowMenu, OverflowMenuItem, Table, TableBody,
-  TableCell, TableContainer, TableHead, TableHeader, TableRow
+  DataTable,
+  DataTableSkeleton,
+  OverflowMenu,
+  OverflowMenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@carbon/react';
-import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { getOpenmrsId } from '../ward-view/ward-view.resource';
 import AdmitPatientButton from '../ward-workspace/admit-patient-button.component';
 import { EmptyState, ErrorState } from './table-state-components';
+import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { Pagination } from '@carbon/react';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { inpatientRequests, isLoading, error } = wardPatientGroupDetails?.inpatientRequestResponse ?? {};
+  const [pageSize, setPageSize] = useState(5);
+  const { paginated, results, totalPages, currentPage, goTo } = usePagination(inpatientRequests, pageSize);
+  const { pageSizes } = usePaginationInfo(pageSize, totalPages, currentPage, results.length);
 
   const headers = [
     { key: 'admissionDate', header: t('dateQueued', 'Date Queued') },
@@ -39,7 +53,7 @@ const AwaitingAdmissionPatients = () => {
     });
   };
   const tableRows = useMemo(() => {
-    return inpatientRequests?.map((request, index) => {
+    return results?.map((request, index) => {
       const admissionDate = request.dispositionEncounter?.encounterDatetime
         ? formatDatetime(parseDate(request.dispositionEncounter?.encounterDatetime))
         : '--';
@@ -85,7 +99,7 @@ const AwaitingAdmissionPatients = () => {
         ),
       };
     });
-  }, [inpatientRequests]);
+  }, [results]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (error) return <ErrorState error={error} />;
@@ -123,23 +137,18 @@ const AwaitingAdmissionPatients = () => {
               })}
             </TableBody>
           </Table>
-          {/* {paginated && !isLoading && (
-              <Pagination
-                forwardText=""
-                backwardText=""
-                page={currentPage}
-                pageSize={currPageSize}
-                pageSizes={pageSizes}
-                totalItems={totalCount}
-                size={'sm'}
-                onChange={({ page: newPage, pageSize }) => {
-                  if (newPage !== currentPage) {
-                    goTo(newPage);
-                  }
-                  setCurrPageSize(pageSize);
-                }}
-              />
-            )} */}
+          {paginated && !isLoading && (
+            <Pagination
+              page={currentPage}
+              pageSize={pageSize}
+              pageSizes={pageSizes}
+              totalItems={(inpatientRequests ?? []).length}
+              onChange={({ page, pageSize }) => {
+                goTo(page);
+                setPageSize(pageSize);
+              }}
+            />
+          )}
         </TableContainer>
       )}
     </DataTable>

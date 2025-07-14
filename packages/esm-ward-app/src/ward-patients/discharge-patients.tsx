@@ -46,15 +46,15 @@ const DischargePatients = () => {
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem
               itemText={t('queueToAnother', 'Queue to another')}
-              //   onClick={() => handleClaimAction(row.id, 'retry')}
+                onClick={() => {}}
             />
             <OverflowMenuItem
               itemText={t('admitPatient', 'Admit Patient')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
+                onClick={() => {}}
             />
             <OverflowMenuItem
               itemText={t('cancel', 'Cancel')}
-              //   onClick={() => handleClaimAction(row.id, 'update')}
+                onClick={() => {}}
             />
           </OverflowMenu>
         ),

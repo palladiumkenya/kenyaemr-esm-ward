@@ -10,13 +10,15 @@ import {
   TableBody,
   TableCell,
 } from '@carbon/react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from './table-state-components';
-import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@openmrs/esm-framework';
+import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
 import { WardPatient, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
+import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { Pagination } from '@carbon/react';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
@@ -69,8 +71,13 @@ const DischargeInPatients = () => {
       return true;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed]);
+
+  const [pageSize, setPageSize] = useState(5);
+  const { paginated, results, totalPages, currentPage, goTo } = usePagination(patients, pageSize);
+  const { pageSizes } = usePaginationInfo(pageSize, totalPages, currentPage, results.length);
+
   const tableRows = useMemo(() => {
-    return patients.map((patient, index) => {
+    return results.map((patient, index) => {
       const { encounterAssigningToCurrentInpatientLocation } = patient.inpatientAdmission ?? {};
 
       const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
@@ -108,7 +115,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [patients]);
+  }, [results]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 
@@ -144,23 +151,18 @@ const DischargeInPatients = () => {
               })}
             </TableBody>
           </Table>
-          {/* {paginated && !isLoading && (
-               <Pagination
-                 forwardText=""
-                 backwardText=""
-                 page={currentPage}
-                 pageSize={currPageSize}
-                 pageSizes={pageSizes}
-                 totalItems={totalCount}
-                 size={'sm'}
-                 onChange={({ page: newPage, pageSize }) => {
-                   if (newPage !== currentPage) {
-                     goTo(newPage);
-                   }
-                   setCurrPageSize(pageSize);
-                 }}
-               />
-             )} */}
+          {paginated && !isLoading && (
+            <Pagination
+              page={currentPage}
+              pageSize={pageSize}
+              pageSizes={pageSizes}
+              totalItems={(patients ?? []).length}
+              onChange={({ page, pageSize }) => {
+                goTo(page);
+                setPageSize(pageSize);
+              }}
+            />
+          )}
         </TableContainer>
       )}
     </DataTable>
