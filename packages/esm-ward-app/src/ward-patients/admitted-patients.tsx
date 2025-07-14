@@ -15,10 +15,9 @@ import { formatDatetime, launchWorkspace, parseDate, useAppContext } from '@open
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
+import { WardPatient, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
-import { mutate } from 'swr';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -36,6 +35,7 @@ const AdmittedPatients = () => {
   ];
 
   const patients = useMemo(() => {
+    const DOCTORE_VISIT_ENCOUNTER_TYPE = '14b36860-5033-4765-b91b-ace856ab64c2';
     return (
       bedLayouts
         ?.map((bedLayout) => {
@@ -60,7 +60,13 @@ const AdmittedPatients = () => {
           return wardPatients;
         })
         ?.flat() ?? []
-    );
+    ).filter((pat) => {
+      const noteEncounter = pat?.visit?.encounters?.find(
+        (encounter) => encounter.encounterType?.uuid === DOCTORE_VISIT_ENCOUNTER_TYPE,
+      );
+      if (!noteEncounter) return true;
+      return true;
+    });
   }, [bedLayouts, wardAdmittedPatientsWithBed]);
 
   const tableRows = useMemo(() => {
@@ -107,11 +113,27 @@ const AdmittedPatients = () => {
               }
             />
             <OverflowMenuItem
-              itemText={t('discharge', 'Discharge')}
+              itemText={t('dischargeIn', 'Discharge In')}
               onClick={() => {
+                const DOCTORS_NOTE_FORM_UUID = '87379b0a-738b-4799-9736-cdac614cee2a';
+
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
+                  formUuid: DOCTORS_NOTE_FORM_UUID,
+                  workspaceTitle: t('doctorsNote', 'Doctors Note'),
+                  dischargePatientOnSuccesfullSubmission: false,
+                });
+              }}
+            />
+            <OverflowMenuItem
+              itemText={t('discharge', 'Discharge')}
+              onClick={() => {
+                const IN_PATIENT_DISCHARGE_FORM_UUID = '98a781d2-b777-4756-b4c9-c9b0deb3483c';
+                launchWorkspace('patient-discharge-workspace', {
+                  wardPatient: patient,
+                  patientUuid: patient.patient.uuid,
+                  formUuid: IN_PATIENT_DISCHARGE_FORM_UUID,
                 });
               }}
             />

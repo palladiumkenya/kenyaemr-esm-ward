@@ -7,10 +7,10 @@ import useWardLocation from './useWardLocation';
  */
 export function useInpatientAdmission() {
   const { location } = useWardLocation();
-
+  // custom:(visit:(encounters:(uuid,display,encounterDatetime,encounterType:(uuid,display)),)
   // prettier-ignore
   const customRepresentation =
-    'custom:(visit,' +
+    'custom:(visit:full,' +
     'patient:(uuid,identifiers:(uuid,display,identifier,identifierType),voided,' +
     'person:(uuid,display,gender,age,birthdate,birthtime,preferredName,preferredAddress,dead,deathDate)),' +
     'encounterAssigningToCurrentInpatientLocation:(encounterDatetime),' +

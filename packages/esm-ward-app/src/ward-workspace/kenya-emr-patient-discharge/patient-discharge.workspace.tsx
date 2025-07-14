@@ -12,49 +12,58 @@ import { useVisitOrOfflineVisit } from '@openmrs/esm-patient-common-lib';
 import { usePatientDischarge } from './patient-discharge.resource';
 import { WardPatient } from '../../types';
 
-const IN_PATIENT_DISCHARGE_FORM_UUID = '98a781d2-b777-4756-b4c9-c9b0deb3483c';
-
 type PatientDischargeWorkspaceProps = DefaultWorkspaceProps & {
   readonly patientUuid: string;
   readonly wardPatient: WardPatient;
+  readonly formUuid: string;
+  readonly dischargePatientOnSuccesfullSubmission?: boolean;
 };
 
 export function PatientDischargeWorkspace(props: PatientDischargeWorkspaceProps) {
   const { t } = useTranslation();
-  const { patientUuid, closeWorkspace, closeWorkspaceWithSavedChanges, wardPatient, promptBeforeClosing } = props;
+  const {
+    patientUuid,
+    closeWorkspace,
+    closeWorkspaceWithSavedChanges,
+    wardPatient,
+    promptBeforeClosing,
+    formUuid,
+    dischargePatientOnSuccesfullSubmission = true,
+  } = props;
   const { visit: currentVisit } = wardPatient ?? {};
   const { patient, isLoading: isLoadingPatient, error: patientError } = usePatient(patientUuid);
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
 
   const { handleDischarge } = usePatientDischarge();
 
-  const encounterUuid = useMemo(() => currentVisit?.encounters?.[0]?.uuid ?? null, [currentVisit?.encounters]);
 
   const state = useMemo<Record<string, unknown>>(
     () => ({
       view: 'form',
-      formUuid: IN_PATIENT_DISCHARGE_FORM_UUID,
+      formUuid,
       visitUuid: currentVisit?.uuid ?? null,
       visitTypeUuid: currentVisit?.visitType?.uuid ?? null,
       patientUuid: patientUuid ?? null,
       patient,
-      encounterUuid,
+      encounterUuid:'',
       closeWorkspaceWithSavedChanges,
       closeWorkspace,
       promptBeforeClosing,
-      handlePostResponse: (encounter: Encounter) =>
-        handleDischarge(encounter, wardPatient, emrConfiguration as Record<string, unknown>, currentVisit),
+      handlePostResponse: (encounter: Encounter) => {
+        if (dischargePatientOnSuccesfullSubmission)
+          handleDischarge(encounter, wardPatient, emrConfiguration as Record<string, unknown>, currentVisit);
+      },
     }),
     [
       patientUuid,
       currentVisit,
-      encounterUuid,
       patient,
       closeWorkspace,
       promptBeforeClosing,
       emrConfiguration,
       closeWorkspaceWithSavedChanges,
       handleDischarge,
+      dischargePatientOnSuccesfullSubmission,
     ],
   );
 
@@ -83,6 +92,7 @@ export function PatientDischargeWorkspace(props: PatientDischargeWorkspaceProps)
 
   return (
     <div>
+      {/* <pre>{JSON.stringify(currentVisit, null, 2)}</pre> */}
       {patient && <ExtensionSlot name="form-widget-slot" state={state} />}
     </div>
   );
