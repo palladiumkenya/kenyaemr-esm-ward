@@ -17,13 +17,25 @@ export interface Entry {
   id: string;
   meta: Meta;
   status: string;
-  class: Class;
-  type: Type[];
+  class: {
+    system: string;
+    code: string;
+  };
+  type: Array<{
+    coding: Array<Coding>;
+  }>;
   subject: Subject;
-  participant: Participant[];
-  period: Period;
-  location: Location[];
-  partOf: PartOf;
+  participant: Array<{
+    individual: Individual;
+  }>;
+  period: {
+    start: string;
+  };
+  location: Array<Location>;
+  partOf: {
+    reference: string;
+    type: string;
+  };
 }
 
 export interface Meta {
@@ -38,15 +50,6 @@ export interface Tag {
   display: string;
 }
 
-export interface Class {
-  system: string;
-  code: string;
-}
-
-export interface Type {
-  coding: Coding[];
-}
-
 export interface Coding {
   system: string;
   code: string;
@@ -59,38 +62,17 @@ export interface Subject {
   display: string;
 }
 
-export interface Participant {
-  individual: Individual;
-}
-
 export interface Individual {
   reference: string;
   type: string;
-  identifier: Identifier;
+  identifier: {
+    value: string;
+  };
   display: string;
-}
-
-export interface Identifier {
-  value: string;
-}
-
-export interface Period {
-  start: string;
 }
 
 export interface Location {
-  location: Location2;
-}
-
-export interface Location2 {
-  reference: string;
-  type: string;
-  display: string;
-}
-
-export interface PartOf {
-  reference: string;
-  type: string;
+  location: { reference: string; type: string; display: string };
 }
 
 function parseDisplayText(displayText: string): { name: string; openmrsId: string } | null {
