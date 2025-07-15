@@ -1,7 +1,14 @@
-import { type FetchResponse, openmrsFetch, restBaseUrl, useFeatureFlag } from '@openmrs/esm-framework';
+import {
+  type FetchResponse,
+  openmrsFetch,
+  restBaseUrl,
+  useFeatureFlag,
+  useOpenmrsPagination,
+} from '@openmrs/esm-framework';
 import useSWR from 'swr';
 import { type AdmissionLocationFetchResponse } from '../types/index';
 import useWardLocation from './useWardLocation';
+import { useState } from 'react';
 
 const requestRep =
   'custom:(ward,totalBeds,occupiedBeds,bedLayouts:(rowNumber,columnNumber,bedNumber,bedId,bedUuid,status,location,patients:(person:full,identifiers,uuid)))';
@@ -34,3 +41,17 @@ export function useAdmissionLocation(rep: string = requestRep) {
     ...rest,
   };
 }
+
+export const useAdmisiionLocations = () => {
+  const apiUrl = `${restBaseUrl}/admissionLocation`;
+  const pageSizes = [10, 20, 50, 100];
+  const [currPageSize, setCurrPageSize] = useState(10);
+  const { data, ...rest } = useOpenmrsPagination<AdmissionLocationFetchResponse>(apiUrl, currPageSize);
+  return {
+    ...rest,
+    admissionLocations: data ?? [],
+    pageSizes,
+    currPageSize,
+    setCurrPageSize,
+  };
+};

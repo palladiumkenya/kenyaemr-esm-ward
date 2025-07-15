@@ -67,7 +67,6 @@ const WardPatientTimeOnWard: React.FC<WardPatientTimeOnWardProps> = ({
   if (parts.length === 0) {
     return null;
   }
-
   return <div>{t('timeOnWard', 'Time on this ward: {{timeOnWard}}', { timeOnWard: parts.join(' ') })}</div>;
 };
 

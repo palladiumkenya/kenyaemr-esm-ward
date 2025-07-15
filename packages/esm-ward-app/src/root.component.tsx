@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import WardView from './ward-view/ward-view.component';
+import WardsLineList from './ward-view/linelist-wards/WardsLineList';
 
 const Root: React.FC = () => {
   // t('wards', 'Wards')
@@ -10,7 +11,7 @@ const Root: React.FC = () => {
     <main>
       <BrowserRouter basename={wardViewBasename}>
         <Routes>
-          <Route path="/" element={<WardView />} />
+          <Route path="/" element={<WardsLineList />} />
           <Route path="/:locationUuid" element={<WardView />} />
         </Routes>
       </BrowserRouter>

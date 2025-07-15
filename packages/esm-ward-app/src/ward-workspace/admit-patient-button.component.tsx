@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import useWardLocation from '../hooks/useWardLocation';
 import type { DispositionType, WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { useAdmitPatient } from '../ward.resource';
+import { OverflowMenuItem } from '@carbon/react';
 
 interface AdmitPatientButtonProps {
   wardPatient: WardPatient;
@@ -22,6 +23,7 @@ interface AdmitPatientButtonProps {
   dispositionType: DispositionType;
   onAdmitPatientSuccess();
   disabled?: boolean;
+  component?: 'btn' | 'menu';
 }
 
 const AdmitPatientButton: React.FC<AdmitPatientButtonProps> = ({
@@ -29,6 +31,7 @@ const AdmitPatientButton: React.FC<AdmitPatientButtonProps> = ({
   onAdmitPatientSuccess,
   disabled,
   dispositionType,
+  component = 'btn',
 }) => {
   const { patient, visit, bed } = wardPatient ?? {};
   const { t } = useTranslation();
@@ -78,6 +81,19 @@ const AdmitPatientButton: React.FC<AdmitPatientButtonProps> = ({
   };
 
   const disabledButton = isLoadingEmrConfiguration || errorFetchingEmrConfiguration || disabled;
+
+  if (component === 'menu')
+    return (
+      <OverflowMenuItem
+        itemText={
+          dispositionType == 'ADMIT' || disabledButton
+            ? t('admitPatient', 'Admit patient')
+            : t('transferPatient', 'Transfer patient')
+        }
+        onClick={onAdmit}
+      />
+    );
+
   return (
     <Button kind="ghost" renderIcon={ArrowRightIcon} size={responsiveSize} disabled={disabledButton} onClick={onAdmit}>
       {dispositionType == 'ADMIT' || disabledButton
