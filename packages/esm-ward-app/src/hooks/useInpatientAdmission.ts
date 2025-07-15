@@ -7,17 +7,17 @@ import useWardLocation from './useWardLocation';
  */
 export function useInpatientAdmission() {
   const { location } = useWardLocation();
-  // custom:(visit:(encounters:(uuid,display,encounterDatetime,encounterType:(uuid,display)),)
   // prettier-ignore
   const customRepresentation =
-    'custom:(visit:full,' +
-    'patient:(uuid,identifiers:(uuid,display,identifier,identifierType),voided,' +
-    'person:(uuid,display,gender,age,birthdate,birthtime,preferredName,preferredAddress,dead,deathDate)),' +
-    'encounterAssigningToCurrentInpatientLocation:(encounterDatetime),' +
-    'currentInpatientRequest:(dispositionLocation,dispositionType,disposition:(uuid,display),dispositionEncounter:(uuid,display),dispositionObsGroup:(uuid,display),visit:(uuid),patient:(uuid)),' +
-    'firstAdmissionOrTransferEncounter:(encounterDatetime),' +
-    'currentInpatientLocation,' + 
-    ')';
+    'custom:(visit:('+
+    'uuid,display,patient:(uuid,display),visitType,indication,location,startDatetime,stopDatetime,'+
+    'attributes,voided,encounters:(uuid,display,encounterDatetime,obs:(uuid,display,concept:(uuid,display),'+
+    'obsDatetime,value),encounterType:(uuid,display))),patient:(uuid,identifiers:(uuid,display,identifier,identifierType)'+
+    ',voided,person:(uuid,display,gender,age,birthdate,birthtime,preferredName,preferredAddress,dead,deathDate)),'+
+    'encounterAssigningToCurrentInpatientLocation:(encounterDatetime),'+
+    'currentInpatientRequest:(dispositionLocation,dispositionType,disposition:(uuid,display),'+
+    'dispositionEncounter:(uuid,display),dispositionObsGroup:(uuid,display),visit:(uuid),patient:(uuid)),'+
+    'firstAdmissionOrTransferEncounter:(encounterDatetime),currentInpatientLocation)'
 
   return useOpenmrsFetchAll<InpatientAdmission>(
     location

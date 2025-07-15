@@ -11,7 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
+import {
+  formatDatetime,
+  launchWorkspace,
+  OpenmrsResource,
+  parseDate,
+  useAppContext,
+  useConfig,
+  usePagination,
+} from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +28,12 @@ import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { Pagination } from '@carbon/react';
+import { WardConfigObject } from '../config-schema';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
   const { t } = useTranslation();
-
+  const config = useConfig<WardConfigObject>();
   const headers = [
     { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
     { key: 'idNumber', header: t('idNumber', 'ID Number') },
@@ -32,12 +41,11 @@ const AdmittedPatients = () => {
     { key: 'gender', header: t('gender', 'Gender') },
     { key: 'age', header: t('age', 'Age') },
     { key: 'bedNumber', header: t('bedNumber', 'Bed Number') },
-    { key: 'daysAdmitted', header: t('durationOnWard', 'Days In Ward') },
+    { key: 'daysAdmitted', header: t('daysInWard', 'Days In Ward') },
     { key: 'action', header: t('action', 'Action') },
   ];
 
   const patients = useMemo(() => {
-    const DOCTORE_VISIT_ENCOUNTER_TYPE = '14b36860-5033-4765-b91b-ace856ab64c2';
     return (
       bedLayouts
         ?.map((bedLayout) => {
@@ -64,12 +72,17 @@ const AdmittedPatients = () => {
         ?.flat() ?? []
     ).filter((pat) => {
       const noteEncounter = pat?.visit?.encounters?.find(
-        (encounter) => encounter.encounterType?.uuid === DOCTORE_VISIT_ENCOUNTER_TYPE,
+        (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
       );
       if (!noteEncounter) return true;
-      return true;
+      const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
+      if (!obs) return true;
+      const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
+        (obs.value as OpenmrsResource).uuid,
+      );
+      return isDischargedIn === false;
     });
-  }, [bedLayouts, wardAdmittedPatientsWithBed]);
+  }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
   const [pageSize, setPageSize] = useState(5);
   const { paginated, results, totalPages, currentPage, goTo } = usePagination(patients, pageSize);
@@ -81,9 +94,12 @@ const AdmittedPatients = () => {
       const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
         ? formatDatetime(parseDate(encounterAssigningToCurrentInpatientLocation!.encounterDatetime!))
         : '--';
-      const daysAdmitted = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
-        ? dayjs(encounterAssigningToCurrentInpatientLocation?.encounterDatetime).diff(dayjs(), 'days')
-        : '--';
+      const encounterDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime;
+      const daysAdmitted =
+        encounterDate && dayjs(encounterDate).isValid()
+          ? Math.abs(dayjs().startOf('day').diff(dayjs(encounterDate).startOf('day'), 'days'))
+          : '--';
+
       return {
         id: patient.patient?.uuid ?? index,
         admissionDate,
@@ -120,12 +136,10 @@ const AdmittedPatients = () => {
             <OverflowMenuItem
               itemText={t('dischargeIn', 'Discharge In')}
               onClick={() => {
-                const DOCTORS_NOTE_FORM_UUID = '87379b0a-738b-4799-9736-cdac614cee2a';
-
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
-                  formUuid: DOCTORS_NOTE_FORM_UUID,
+                  formUuid: config.doctorsNoteFormUuid,
                   workspaceTitle: t('doctorsNote', 'Doctors Note'),
                   dischargePatientOnSuccesfullSubmission: false,
                 });
@@ -134,11 +148,10 @@ const AdmittedPatients = () => {
             <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
               onClick={() => {
-                const IN_PATIENT_DISCHARGE_FORM_UUID = '98a781d2-b777-4756-b4c9-c9b0deb3483c';
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
-                  formUuid: IN_PATIENT_DISCHARGE_FORM_UUID,
+                  formUuid: config.inpatientDischargeFormUuid,
                 });
               }}
             />
@@ -146,7 +159,7 @@ const AdmittedPatients = () => {
         ),
       };
     });
-  }, [results]);
+  }, [results, config]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (!patients.length)

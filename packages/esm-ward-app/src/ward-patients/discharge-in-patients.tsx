@@ -13,18 +13,27 @@ import {
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from './table-state-components';
-import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
+import {
+  formatDatetime,
+  launchWorkspace,
+  OpenmrsResource,
+  parseDate,
+  useAppContext,
+  useConfig,
+  usePagination,
+} from '@openmrs/esm-framework';
 import { WardPatient, WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { Pagination } from '@carbon/react';
+import { WardConfigObject } from '../config-schema';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
-
+  const config = useConfig<WardConfigObject>();
   const headers = [
     { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
     { key: 'idNumber', header: t('idNumber', 'ID Number') },
@@ -37,8 +46,6 @@ const DischargeInPatients = () => {
   ];
 
   const patients = useMemo(() => {
-    const DOCTORE_VISIT_ENCOUNTER_TYPE = '14b36860-5033-4765-b91b-ace856ab64c2';
-
     return (
       bedLayouts
         ?.map((bedLayout) => {
@@ -65,12 +72,17 @@ const DischargeInPatients = () => {
         ?.flat() ?? []
     ).filter((pat) => {
       const noteEncounter = pat?.visit?.encounters?.find(
-        (encounter) => encounter.encounterType?.uuid === DOCTORE_VISIT_ENCOUNTER_TYPE,
+        (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
       );
       if (!noteEncounter) return false;
-      return true;
+      const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
+      if (!obs) return false;
+      const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
+        (obs.value as OpenmrsResource).uuid,
+      );
+      return isDischargedIn === true;
     });
-  }, [bedLayouts, wardAdmittedPatientsWithBed]);
+  }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
   const [pageSize, setPageSize] = useState(5);
   const { paginated, results, totalPages, currentPage, goTo } = usePagination(patients, pageSize);
@@ -103,11 +115,10 @@ const DischargeInPatients = () => {
             <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
               onClick={() => {
-                const IN_PATIENT_DISCHARGE_FORM_UUID = '98a781d2-b777-4756-b4c9-c9b0deb3483c';
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
-                  formUuid: IN_PATIENT_DISCHARGE_FORM_UUID,
+                  formUuid: config.inpatientDischargeFormUuid,
                 });
               }}
             />
@@ -115,7 +126,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [results]);
+  }, [results, config]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 

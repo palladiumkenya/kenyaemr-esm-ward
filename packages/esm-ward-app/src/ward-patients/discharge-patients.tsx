@@ -1,27 +1,41 @@
 import {
+  DataTable,
   OverflowMenu,
   OverflowMenuItem,
-  DataTable,
-  TableContainer,
   Table,
-  TableHead,
-  TableRow,
-  TableHeader,
   TableBody,
   TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@carbon/react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EmptyState } from './table-state-components';
-import { useAppContext } from '@openmrs/esm-framework';
-import { WardViewContext } from '../types';
+import { EmptyState, ErrorState } from './table-state-components';
+import { useIpdDischargeEncounter } from '../hooks/useIpdDischargeEncounter';
+import { DataTableSkeleton } from '@carbon/react';
+import { Pagination } from '@carbon/react';
+import { formatDatetime, parseDate } from '@openmrs/esm-framework';
+import { PatientAdmissionDateCell, PatientAgeCell, PatientDayInWardCell, PatientGenderCell } from './patient-cells';
 
 const DischargePatients = () => {
   const { t } = useTranslation();
-  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
-
+  const {
+    encounters,
+    error,
+    isLoading,
+    paginated,
+    currentPage,
+    pageSizes,
+    goTo,
+    currPageSize,
+    setCurrPageSize,
+    totalCount,
+  } = useIpdDischargeEncounter();
   const headers = [
     { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
+    { key: 'dischargeDate', header: t('dischargeDate', 'Discharge Date') },
     { key: 'idNumber', header: t('idNumber', 'ID Number') },
     { key: 'name', header: t('name', 'Name') },
     { key: 'gender', header: t('gender', 'Gender') },
@@ -30,39 +44,32 @@ const DischargePatients = () => {
     { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
     { key: 'action', header: t('action', 'Action') },
   ];
-  const patients = [];
   const tableRows = useMemo(() => {
-    return patients.map((patient, index) => {
+    return encounters.map((encounter, index) => {
       return {
-        id: '--',
-        admissionDate: '--',
-        idNumber: '--',
-        name: '--',
-        gender: '--',
-        age: '--',
+        id: encounter.uuid,
+        dischargeDate: encounter.encounterDateTime ? formatDatetime(parseDate(encounter.encounterDateTime)) : '--',
+        admissionDate: <PatientAdmissionDateCell patientUuid={encounter.patient.uuid} encounterUuid={encounter.uuid} />,
+        idNumber: encounter.patient.openmrsId,
+        name: encounter.patient.name,
+        gender: <PatientGenderCell patientUuid={encounter.patient.uuid} />,
+        age: <PatientAgeCell patientUuid={encounter.patient.uuid} />,
         bedNumber: '--',
-        daysAdmitted: '--',
+        daysAdmitted: <PatientDayInWardCell patientUuid={encounter.patient.uuid} encounterUuid={encounter.uuid} />,
         action: (
           <OverflowMenu size={'sm'} flipped>
-            <OverflowMenuItem
-              itemText={t('queueToAnother', 'Queue to another')}
-                onClick={() => {}}
-            />
-            <OverflowMenuItem
-              itemText={t('admitPatient', 'Admit Patient')}
-                onClick={() => {}}
-            />
-            <OverflowMenuItem
-              itemText={t('cancel', 'Cancel')}
-                onClick={() => {}}
-            />
+            <OverflowMenuItem itemText={t('dischargeSummary', 'Discharge Summary')} onClick={() => {}} />
+            <OverflowMenuItem itemText={t('gatePass', 'Gate Pass')} onClick={() => {}} />
           </OverflowMenu>
         ),
       };
     });
-  }, [patients]);
+  }, [encounters]);
 
-  if (!patients.length) return <EmptyState message={t('noDischargepatients', 'No Discharge patients')} />;
+  if (isLoading) return <DataTableSkeleton />;
+  if (error) return <ErrorState error={error} />;
+
+  if (!encounters?.length) return <EmptyState message={t('noDischargepatients', 'No Discharge patients')} />;
 
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
@@ -96,23 +103,23 @@ const DischargePatients = () => {
               })}
             </TableBody>
           </Table>
-          {/* {paginated && !isLoading && (
-                <Pagination
-                  forwardText=""
-                  backwardText=""
-                  page={currentPage}
-                  pageSize={currPageSize}
-                  pageSizes={pageSizes}
-                  totalItems={totalCount}
-                  size={'sm'}
-                  onChange={({ page: newPage, pageSize }) => {
-                    if (newPage !== currentPage) {
-                      goTo(newPage);
-                    }
-                    setCurrPageSize(pageSize);
-                  }}
-                />
-              )} */}
+          {paginated && !isLoading && (
+            <Pagination
+              forwardText=""
+              backwardText=""
+              page={currentPage}
+              pageSize={currPageSize}
+              pageSizes={pageSizes}
+              totalItems={totalCount}
+              size={'sm'}
+              onChange={({ page: newPage, pageSize }) => {
+                if (newPage !== currentPage) {
+                  goTo(newPage);
+                }
+                setCurrPageSize(pageSize);
+              }}
+            />
+          )}
         </TableContainer>
       )}
     </DataTable>

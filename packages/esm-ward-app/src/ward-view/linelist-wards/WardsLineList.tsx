@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const WardsLineList = () => {
   const { t } = useTranslation();
+  // TODO here to replace the mocked values
   const cards = useMemo(() => {
     return [
       { label: t('numberOfBeds', 'Number of Beds'), value: '40' },

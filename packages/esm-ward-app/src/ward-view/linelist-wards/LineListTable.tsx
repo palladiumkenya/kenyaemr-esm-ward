@@ -33,7 +33,6 @@ const LineListTable = () => {
     currPageSize,
     setCurrPageSize,
     totalCount,
-    currentPageSize,
   } = useAdmisiionLocations();
   const { t } = useTranslation();
   const headerTitle = t('wards', 'Wards');

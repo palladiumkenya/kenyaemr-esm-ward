@@ -259,6 +259,46 @@ export const configSchema: ConfigSchema = {
     _type: Type.Boolean,
     _default: false,
   },
+  ipdDischargeEncounterTypeUuid: {
+    _description: 'IPD Discharge encounter type',
+    _type: Type.String,
+    _default: '7e618d13-ffdb-4650-9a97-10ccd16ca36d',
+  },
+  doctorsnoteEncounterTypeUuid: {
+    _description: "Doctor's Note encounter type",
+    _type: Type.String,
+    _default: '14b36860-5033-4765-b91b-ace856ab64c2',
+  },
+  admissionEncounterTypeUuid: {
+    _description: "Admission encounter type",
+    _type: Type.String,
+    _default: 'e22e39fd-7db2-45e7-80f1-60fa0d5a4378',
+  },
+  referralsConceptUuid: {
+    _description: 'Referrals concept uuid',
+    _type: Type.String,
+    _default: '1695AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  },
+  referringToAnotherFacilityConceptUuid: {
+    _description: 'Referring to another facility concept uuid',
+    _type: Type.String,
+    _default: '164165AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  },
+  dischargeHomeConceptUuid: {
+    _description: 'Discharge home concept uuid',
+    _type: Type.String,
+    _default: '1692AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  },
+  doctorsNoteFormUuid: {
+    _description: 'Doctors note form uuid',
+    _type: Type.String,
+    _default: '87379b0a-738b-4799-9736-cdac614cee2a',
+  },
+  inpatientDischargeFormUuid: {
+    _description: 'IPD Discharge form uuid',
+    _type: Type.String,
+    _default: '98a781d2-b777-4756-b4c9-c9b0deb3483c',
+  },
 };
 
 export interface WardConfigObject {
@@ -272,6 +312,14 @@ export interface WardConfigObject {
   };
   wards: Array<WardDefinition>;
   hideWorkspaceVitalsLinks: boolean;
+  ipdDischargeEncounterTypeUuid: string;
+  doctorsnoteEncounterTypeUuid: string;
+  admissionEncounterTypeUuid: string;
+  referralsConceptUuid: string;
+  referringToAnotherFacilityConceptUuid: string;
+  dischargeHomeConceptUuid: string;
+  doctorsNoteFormUuid:string
+  inpatientDischargeFormUuid:string
 }
 
 export interface PendingItemsElementConfig {

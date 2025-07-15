@@ -57,11 +57,11 @@ const AwaitingAdmissionPatients = () => {
       const admissionDate = request.dispositionEncounter?.encounterDatetime
         ? formatDatetime(parseDate(request.dispositionEncounter?.encounterDatetime))
         : '--';
-      const daysAdmitted = request.dispositionEncounter?.encounterDatetime
-        ? dayjs()
-            .startOf('day')
-            .diff(dayjs(request.dispositionEncounter?.encounterDatetime).startOf('day'), 'days')
-        : '--';
+      const encounterDate = request.dispositionEncounter?.encounterDatetime;
+      const daysAdmitted =
+        encounterDate && dayjs(encounterDate).isValid()
+          ? Math.abs(dayjs().startOf('day').diff(dayjs(encounterDate).startOf('day'), 'days'))
+          : '--';
       const wardPatient = {
         patient: request.patient,
         visit: request.visit,
