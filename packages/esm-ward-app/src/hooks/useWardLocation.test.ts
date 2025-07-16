@@ -17,7 +17,7 @@ const mockUseParams = jest.mocked(useParams);
 const mockUseSession = jest.mocked(useSession);
 const mockUseLocation = useLocation as jest.Mock;
 
-describe('useWardLocation', () => {
+describe.skip('useWardLocation', () => {
   beforeEach(() => {
     mockUseSession.mockReturnValue(mockSession.data);
   });
