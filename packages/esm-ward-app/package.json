@@ -38,11 +38,11 @@
   },
   "dependencies": {
     "@carbon/react": "^1.83.0",
-    "@hookform/resolvers": "^5.1.1",
+    "@hookform/resolvers": "2.9.11",
     "classnames": "^2.3.2",
     "lodash-es": "^4.17.15",
-    "react-hook-form": "^7.60.0",
-    "zod": "^3.25.75"
+    "react-hook-form": "^7.54.0",
+    "zod": "3.24.1"
   },
   "peerDependencies": {
     "@openmrs/esm-framework": "6.x",
