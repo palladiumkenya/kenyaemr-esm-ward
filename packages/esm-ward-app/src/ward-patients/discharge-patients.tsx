@@ -1,5 +1,6 @@
 import {
   DataTable,
+  DataTableSkeleton,
   OverflowMenu,
   OverflowMenuItem,
   Table,
@@ -9,13 +10,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Pagination,
 } from '@carbon/react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, ErrorState } from './table-state-components';
 import { useIpdDischargeEncounter } from '../hooks/useIpdDischargeEncounter';
-import { DataTableSkeleton } from '@carbon/react';
-import { Pagination } from '@carbon/react';
 import { formatDatetime, parseDate } from '@openmrs/esm-framework';
 import { PatientAdmissionDateCell, PatientAgeCell, PatientDayInWardCell, PatientGenderCell } from './patient-cells';
 
@@ -64,7 +64,7 @@ const DischargePatients = () => {
         ),
       };
     });
-  }, [encounters]);
+  }, [encounters, t]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (error) return <ErrorState error={error} />;

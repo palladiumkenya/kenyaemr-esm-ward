@@ -2,15 +2,14 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InlineLoading, InlineNotification } from '@carbon/react';
 import {
-  DefaultWorkspaceProps,
-  Encounter,
+  type DefaultWorkspaceProps,
+  type Encounter,
   ExtensionSlot,
   useEmrConfiguration,
   usePatient,
 } from '@openmrs/esm-framework';
-import { useVisitOrOfflineVisit } from '@openmrs/esm-patient-common-lib';
 import { usePatientDischarge } from './patient-discharge.resource';
-import { WardPatient } from '../../types';
+import { type WardPatient } from '../../types';
 
 type PatientDischargeWorkspaceProps = DefaultWorkspaceProps & {
   readonly patientUuid: string;
@@ -36,7 +35,6 @@ export function PatientDischargeWorkspace(props: PatientDischargeWorkspaceProps)
 
   const { handleDischarge } = usePatientDischarge();
 
-
   const state = useMemo<Record<string, unknown>>(
     () => ({
       view: 'form',
@@ -45,7 +43,7 @@ export function PatientDischargeWorkspace(props: PatientDischargeWorkspaceProps)
       visitTypeUuid: currentVisit?.visitType?.uuid ?? null,
       patientUuid: patientUuid ?? null,
       patient,
-      encounterUuid:'',
+      encounterUuid: '',
       closeWorkspaceWithSavedChanges,
       closeWorkspace,
       promptBeforeClosing,
@@ -64,6 +62,8 @@ export function PatientDischargeWorkspace(props: PatientDischargeWorkspaceProps)
       closeWorkspaceWithSavedChanges,
       handleDischarge,
       dischargePatientOnSuccesfullSubmission,
+      formUuid,
+      wardPatient,
     ],
   );
 
