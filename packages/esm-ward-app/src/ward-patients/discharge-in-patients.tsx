@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableBody,
   TableCell,
+  Pagination,
 } from '@carbon/react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,18 +17,17 @@ import { EmptyState } from './table-state-components';
 import {
   formatDatetime,
   launchWorkspace,
-  OpenmrsResource,
+  type OpenmrsResource,
   parseDate,
   useAppContext,
   useConfig,
   usePagination,
 } from '@openmrs/esm-framework';
-import { WardPatient, WardViewContext } from '../types';
+import { type WardPatient, type WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { Pagination } from '@carbon/react';
-import { WardConfigObject } from '../config-schema';
+import { type WardConfigObject } from '../config-schema';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
@@ -126,7 +126,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [results, config]);
+  }, [results, config, t]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 

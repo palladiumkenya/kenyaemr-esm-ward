@@ -10,17 +10,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Pagination,
 } from '@carbon/react';
 import { formatDatetime, launchWorkspace, parseDate, useAppContext, usePagination } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
+import { type WardPatient, type WardPatientWorkspaceProps, type WardViewContext } from '../types';
 import { getOpenmrsId } from '../ward-view/ward-view.resource';
 import AdmitPatientButton from '../ward-workspace/admit-patient-button.component';
 import { EmptyState, ErrorState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { Pagination } from '@carbon/react';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();
@@ -99,7 +99,7 @@ const AwaitingAdmissionPatients = () => {
         ),
       };
     });
-  }, [results]);
+  }, [results, t]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (error) return <ErrorState error={error} />;

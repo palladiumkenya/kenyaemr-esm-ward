@@ -1,4 +1,4 @@
-import { Button } from '@carbon/react';
+import { Button, OverflowMenuItem } from '@carbon/react';
 import {
   ArrowRightIcon,
   launchWorkspace,
@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import useWardLocation from '../hooks/useWardLocation';
 import type { DispositionType, WardPatient, WardPatientWorkspaceProps, WardViewContext } from '../types';
 import { useAdmitPatient } from '../ward.resource';
-import { OverflowMenuItem } from '@carbon/react';
 
 interface AdmitPatientButtonProps {
   wardPatient: WardPatient;

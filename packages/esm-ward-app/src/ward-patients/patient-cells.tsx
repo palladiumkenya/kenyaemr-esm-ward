@@ -1,9 +1,9 @@
 import { InlineLoading } from '@carbon/react';
 import { formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
-import React, { FC, useMemo } from 'react';
+import React, { type FC, useMemo } from 'react';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
-import { WardConfigObject } from '../config-schema';
+import { type WardConfigObject } from '../config-schema';
 
 type CellProps = {
   patientUuid: string;

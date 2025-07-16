@@ -2,7 +2,7 @@
 
 import { Tile } from '@carbon/react';
 import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import styles from './ward-patient.scss';
 import { useTranslation } from 'react-i18next';
 type EmptyStateProps = {

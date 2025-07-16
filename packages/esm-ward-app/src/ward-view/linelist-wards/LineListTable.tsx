@@ -1,12 +1,8 @@
 import React, { useMemo } from 'react';
 import styles from './linelist-wards.scss';
 import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
-import { DataTableSkeleton } from '@carbon/react';
-import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
-import { useTranslation } from 'react-i18next';
-import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
-import { Layer } from '@carbon/react';
 import {
+  DataTableSkeleton,
   DataTable,
   TableContainer,
   Table,
@@ -15,11 +11,16 @@ import {
   TableHeader,
   TableBody,
   TableCell,
+  Tile,
   Pagination,
+  Layer,
+  Search,
 } from '@carbon/react';
-import { Search } from '@carbon/react';
-import { AdmissionLocationFetchResponse } from '../../types';
-import { Tile } from '@carbon/react';
+import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
+import { useTranslation } from 'react-i18next';
+import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
+
+import { type AdmissionLocationFetchResponse } from '../../types';
 import { EmptyState } from '../../ward-patients/table-state-components';
 const LineListTable = () => {
   const {
@@ -68,7 +69,7 @@ const LineListTable = () => {
         // pendingOut:
       };
     });
-  }, [admissionLocations, calculateOccupancy]);
+  }, [admissionLocations]);
   if (isLoading)
     return (
       <Layer className={styles.tableContainer}>
