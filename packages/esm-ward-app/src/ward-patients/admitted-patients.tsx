@@ -29,6 +29,7 @@ import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { type WardConfigObject } from '../config-schema';
+import { HyperLinkPatientCell } from './patient-cells';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -104,7 +105,9 @@ const AdmittedPatients = () => {
         id: patient.patient?.uuid ?? index,
         admissionDate,
         idNumber: getOpenmrsId(patient.patient?.identifiers ?? []) ?? '--',
-        name: patient.patient?.person?.display ?? '--',
+        name: (
+          <HyperLinkPatientCell patientName={patient.patient?.person?.display} patientUuid={patient.patient?.uuid} />
+        ),
         gender: patient.patient?.person?.gender ?? '--',
         age: patient.patient?.person?.age ?? '--',
         bedNumber: patient.bed?.bedNumber ?? '--',

@@ -21,6 +21,7 @@ import { getOpenmrsId } from '../ward-view/ward-view.resource';
 import AdmitPatientButton from '../ward-workspace/admit-patient-button.component';
 import { EmptyState, ErrorState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { HyperLinkPatientCell } from './patient-cells';
 
 const AwaitingAdmissionPatients = () => {
   const { t } = useTranslation();
@@ -75,7 +76,9 @@ const AwaitingAdmissionPatients = () => {
         id: request?.patient?.uuid ?? index,
         admissionDate,
         idNumber: getOpenmrsId(request.patient?.identifiers ?? []) ?? '--',
-        name: request?.patient?.person?.display ?? '--',
+        name: (
+          <HyperLinkPatientCell patientName={request.patient?.person?.display} patientUuid={request.patient?.uuid} />
+        ),
         gender: request?.patient?.person?.gender ?? '--',
         age: request?.patient?.person?.age ?? '--',
         bedNumber: '--',

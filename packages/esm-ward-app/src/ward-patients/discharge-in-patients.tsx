@@ -28,6 +28,7 @@ import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { type WardConfigObject } from '../config-schema';
+import { HyperLinkPatientCell } from './patient-cells';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
@@ -102,7 +103,9 @@ const DischargeInPatients = () => {
         id: patient.patient?.uuid ?? index,
         admissionDate,
         idNumber: getOpenmrsId(patient.patient?.identifiers ?? []) ?? '--',
-        name: patient.patient?.person?.display ?? '--',
+        name: (
+          <HyperLinkPatientCell patientName={patient.patient?.person?.display} patientUuid={patient.patient?.uuid} />
+        ),
         gender: patient.patient?.person?.gender ?? '--',
         age: patient.patient?.person?.age ?? '--',
         bedNumber: patient.bed?.bedNumber ?? '--',

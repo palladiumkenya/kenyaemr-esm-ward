@@ -1,5 +1,5 @@
 import { InlineLoading } from '@carbon/react';
-import { formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
+import { ConfigurableLink, formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { type FC, useMemo } from 'react';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
@@ -18,6 +18,14 @@ export const PatientAgeCell: FC<CellProps> = ({ patientUuid }) => {
   if (isLoading) return <InlineLoading />;
   if (error) return <p>--</p>;
   return <div>{age}</div>;
+};
+export const HyperLinkPatientCell: FC<CellProps & { patientName: string }> = ({ patientUuid, patientName }) => {
+  const patientChartUrl = '${openmrsSpaBase}/patient/${patientUuid}/chart/Patient Summary';
+  return (
+    <ConfigurableLink to={patientChartUrl} templateParams={{ patientUuid }} style={{ textDecoration: 'none' }}>
+      {patientName}
+    </ConfigurableLink>
+  );
 };
 
 export const PatientGenderCell: FC<CellProps> = ({ patientUuid }) => {
