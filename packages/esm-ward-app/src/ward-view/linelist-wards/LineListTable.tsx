@@ -13,9 +13,9 @@ import {
   Tile,
 } from '@carbon/react';
 import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
-import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
-import React, { useMemo } from 'react';
+import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
+import React, { useMemo } from 'react';
 import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
 import styles from './linelist-wards.scss';
 
