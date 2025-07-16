@@ -1,7 +1,7 @@
-import { OpenmrsResource, restBaseUrl, useConfig, useOpenmrsFetchAll } from '@openmrs/esm-framework';
+import { type OpenmrsResource, restBaseUrl, useConfig, useOpenmrsFetchAll } from '@openmrs/esm-framework';
 import { useMemo } from 'react';
-import { WardConfigObject } from '../config-schema';
-import { AdmissionLocationFetchResponse } from '../types';
+import type { WardConfigObject } from '../config-schema';
+import type { AdmissionLocationFetchResponse } from '../types';
 import { useIpdDischargeEncounter } from './useIpdDischargeEncounter';
 import { useWardPatientGrouping } from './useWardPatientGrouping';
 
@@ -34,7 +34,7 @@ export const useWardsSummaryMetrics = () => {
         }, 0)
       );
     }, 0);
-  }, [totalBeds, occupiedBeds]);
+  }, [totalBeds, occupiedBeds, data]);
   return {
     totalBeds,
     occupiedBeds,

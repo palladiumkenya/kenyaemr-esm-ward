@@ -1,5 +1,5 @@
 import { InlineLoading } from '@carbon/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useWardPatientGrouping } from '../../hooks/useWardPatientGrouping';
 
 type WardPendingOutCellProps = {
