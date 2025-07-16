@@ -15,7 +15,7 @@ const WardPatientsTable = () => {
         <Tab>{t('awaitingAdmision', 'Awaiting Admission')}</Tab>
         <Tab>{t('admitted', 'Admitted')}</Tab>
         <Tab>{t('dischargeIn', 'Discharge In')}</Tab>
-        <Tab>{t('discharge', 'Discharge')}</Tab>
+        <Tab>{t('discharged', 'Discharged')}</Tab>
       </TabList>
       <TabPanels>
         <TabPanel>

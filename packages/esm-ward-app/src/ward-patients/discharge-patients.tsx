@@ -75,7 +75,7 @@ const DischargePatients = () => {
   if (isLoading) return <DataTableSkeleton />;
   if (error) return <ErrorState error={error} />;
 
-  if (!encounters?.length) return <EmptyState message={t('noDischargepatients', 'No Discharge patients')} />;
+  if (!encounters?.length) return <EmptyState message={t('noDischargedPatients', 'No Discharged patients')} />;
 
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>

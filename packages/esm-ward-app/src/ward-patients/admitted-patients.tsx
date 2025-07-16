@@ -72,16 +72,17 @@ const AdmittedPatients = () => {
         })
         ?.flat() ?? []
     ).filter((pat) => {
-      const noteEncounter = pat?.visit?.encounters?.find(
-        (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
+      const ipdDischargeEncounter = pat?.visit?.encounters?.find(
+        (encounter) => encounter.encounterType?.uuid === config.ipdDischargeEncounterTypeUuid,
       );
-      if (!noteEncounter) return true;
-      const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-      if (!obs) return true;
-      const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
-        (obs.value as OpenmrsResource).uuid,
-      );
-      return isDischargedIn === false;
+      if (!ipdDischargeEncounter) return true;
+      return false;
+      // const obs = ipdDischargeEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
+      // if (!obs) return true;
+      // const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
+      //   (obs.value as OpenmrsResource).uuid,
+      // );
+      // return isDischargedIn === false;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
@@ -137,24 +138,13 @@ const AdmittedPatients = () => {
               }
             />
             <OverflowMenuItem
-              itemText={t('dischargeIn', 'Discharge In')}
-              onClick={() => {
-                launchWorkspace('patient-discharge-workspace', {
-                  wardPatient: patient,
-                  patientUuid: patient.patient.uuid,
-                  formUuid: config.doctorsNoteFormUuid,
-                  workspaceTitle: t('doctorsNote', 'Doctors Note'),
-                  dischargePatientOnSuccesfullSubmission: false,
-                });
-              }}
-            />
-            <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
               onClick={() => {
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
                   formUuid: config.inpatientDischargeFormUuid,
+                  dischargePatientOnSuccesfullSubmission: false,
                 });
               }}
             />

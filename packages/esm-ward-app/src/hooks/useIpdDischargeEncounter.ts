@@ -5,6 +5,7 @@ import {
   openmrsFetch,
   restBaseUrl,
   useConfig,
+  useEmrConfiguration,
   useFhirPagination,
 } from '@openmrs/esm-framework';
 import { useMemo, useState } from 'react';
@@ -89,13 +90,14 @@ function parseDisplayText(displayText: string): { name: string; openmrsId: strin
 }
 
 export const useIpdDischargeEncounter = () => {
+  const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
   const { isLoadingLocation, location, errorFetchingLocation } = useWardLocation();
-  const { ipdDischargeEncounterTypeUuid } = useConfig<WardConfigObject>();
   const pageSizes = [10, 20, 50, 100];
   const [currPageSize, setCurrPageSize] = useState(10);
-  const urls = !location
-    ? null
-    : `${fhirBaseUrl}/Encounter?_summary=data&type=${ipdDischargeEncounterTypeUuid}&location=${location?.uuid}`;
+  const urls =
+    !location || emrConfiguration
+      ? null
+      : `${fhirBaseUrl}/Encounter?_summary=data&type=${emrConfiguration?.exitFromInpatientEncounterType}&location=${location?.uuid}`;
   const { data, isLoading, error, paginated, currentPage, goTo, totalCount, currentPageSize } =
     useFhirPagination<Entry>(urls, currPageSize);
   const encounters = useMemo(() => {
@@ -111,8 +113,8 @@ export const useIpdDischargeEncounter = () => {
   }, [data]);
   return {
     encounters,
-    isLoading: isLoading || isLoadingLocation,
-    error: error || errorFetchingLocation,
+    isLoading: isLoading || isLoadingLocation || isLoadingEmrConfiguration,
+    error: error || errorFetchingLocation || errorFetchingEmrConfiguration,
     paginated,
     currentPage,
     pageSizes,

@@ -15,12 +15,14 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from './table-state-components';
 import {
+  type Encounter,
   formatDatetime,
   launchWorkspace,
   type OpenmrsResource,
   parseDate,
   useAppContext,
   useConfig,
+  useEmrConfiguration,
   usePagination,
 } from '@openmrs/esm-framework';
 import { type WardPatient, type WardViewContext } from '../types';
@@ -29,11 +31,16 @@ import dayjs from 'dayjs';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { type WardConfigObject } from '../config-schema';
 import { HyperLinkPatientCell } from './patient-cells';
+import { usePatientDischarge } from '../ward-workspace/kenya-emr-patient-discharge/patient-discharge.resource';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
+  //TODO remove (added for demo purposes)
+  const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
+  const { handleDischarge } = usePatientDischarge();
+
   const config = useConfig<WardConfigObject>();
   const headers = [
     { key: 'admissionDate', header: t('admissionDate', 'Admission Date') },
@@ -72,16 +79,17 @@ const DischargeInPatients = () => {
         })
         ?.flat() ?? []
     ).filter((pat) => {
-      const noteEncounter = pat?.visit?.encounters?.find(
-        (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
+      const ipdDischargeEncounter = pat?.visit?.encounters?.find(
+        (encounter) => encounter.encounterType?.uuid === config.ipdDischargeEncounterTypeUuid,
       );
-      if (!noteEncounter) return false;
-      const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-      if (!obs) return false;
-      const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
-        (obs.value as OpenmrsResource).uuid,
-      );
-      return isDischargedIn === true;
+      if (!ipdDischargeEncounter) return false;
+      return true;
+      // const obs = ipdDischargeEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
+      // if (!obs) return false;
+      // const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
+      //   (obs.value as OpenmrsResource).uuid,
+      // );
+      // return isDischargedIn === true;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
@@ -91,7 +99,7 @@ const DischargeInPatients = () => {
 
   const tableRows = useMemo(() => {
     return results.map((patient, index) => {
-      const { encounterAssigningToCurrentInpatientLocation } = patient.inpatientAdmission ?? {};
+      const { encounterAssigningToCurrentInpatientLocation, visit } = patient.inpatientAdmission ?? {};
 
       const admissionDate = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
         ? formatDatetime(parseDate(encounterAssigningToCurrentInpatientLocation!.encounterDatetime!))
@@ -99,6 +107,9 @@ const DischargeInPatients = () => {
       const daysAdmitted = encounterAssigningToCurrentInpatientLocation?.encounterDatetime
         ? dayjs(encounterAssigningToCurrentInpatientLocation?.encounterDatetime).diff(dayjs(), 'days')
         : '--';
+
+      // TODO Debug why visit for some patient ainit available
+
       return {
         id: patient.patient?.uuid ?? index,
         admissionDate,
@@ -116,13 +127,15 @@ const DischargeInPatients = () => {
             <OverflowMenuItem itemText={t('waivePatient', 'Waive Patient')} onClick={() => {}} />
             <OverflowMenuItem itemText={t('patientAbscondend', 'Patient Absconded')} onClick={() => {}} />
             <OverflowMenuItem
-              itemText={t('discharge', 'Discharge')}
-              onClick={() => {
-                launchWorkspace('patient-discharge-workspace', {
-                  wardPatient: patient,
-                  patientUuid: patient.patient.uuid,
-                  formUuid: config.inpatientDischargeFormUuid,
-                });
+              itemText={t('discharged', 'Discharged')}
+              onClick={async () => {
+                // TODO Clean up 
+                await handleDischarge({} as Encounter, patient, emrConfiguration as Record<string, any>, patient.visit);
+                // launchWorkspace('patient-discharge-workspace', {
+                //   wardPatient: patient,
+                //   patientUuid: patient.patient.uuid,
+                //   formUuid: config.inpatientDischargeFormUuid,
+                // });
               }}
             />
           </OverflowMenu>
