@@ -10,11 +10,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Pagination,
 } from '@carbon/react';
 import {
   formatDatetime,
   launchWorkspace,
-  OpenmrsResource,
+  type OpenmrsResource,
   parseDate,
   useAppContext,
   useConfig,
@@ -23,12 +24,11 @@ import {
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WardPatient, WardViewContext } from '../types';
+import { type WardPatient, type WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { Pagination } from '@carbon/react';
-import { WardConfigObject } from '../config-schema';
+import { type WardConfigObject } from '../config-schema';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -159,7 +159,7 @@ const AdmittedPatients = () => {
         ),
       };
     });
-  }, [results, config]);
+  }, [results, config, t]);
 
   if (isLoading) return <DataTableSkeleton />;
   if (!patients.length)

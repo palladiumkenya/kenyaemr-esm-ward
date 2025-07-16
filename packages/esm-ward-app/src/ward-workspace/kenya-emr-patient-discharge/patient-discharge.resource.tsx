@@ -1,15 +1,15 @@
 import {
-  Encounter,
+  type Encounter,
   openmrsFetch,
-  OpenmrsResource,
+  type OpenmrsResource,
   restBaseUrl,
   showSnackbar,
   useAppContext,
   useSession,
-  Visit,
+  type Visit,
 } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
-import { WardPatient } from '../../types';
+import { type WardPatient } from '../../types';
 
 export function removePatientFromBed(bedId: number, patientUuid: string) {
   return openmrsFetch(`${restBaseUrl}/beds/${bedId}?patientUuid=${patientUuid}`, {

@@ -1,6 +1,6 @@
 import { ContentSwitcher, Switch } from '@carbon/react';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
-import React, { FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ward-view.scss';
 

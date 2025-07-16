@@ -6,21 +6,19 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Tile,
+  Tile
 } from '@carbon/react';
 import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
-import { AdmissionLocationFetchResponse } from '../../types';
+
+import { type AdmissionLocationFetchResponse } from '../../types';
 import { EmptyState } from '../../ward-patients/table-state-components';
 import styles from './linelist-wards.scss';
 import WardPendingOutCell from './WardPendingOutCell';
+import { TableContainer, TableHead, TableRow, TableHeader } from '@carbon/react';
 const LineListTable = () => {
   const {
     admissionLocations,
@@ -68,7 +66,7 @@ const LineListTable = () => {
         pendingOut: <WardPendingOutCell locationUuid={location.ward.uuid} />,
       };
     });
-  }, [admissionLocations, calculateOccupancy]);
+  }, [admissionLocations]);
   if (isLoading)
     return (
       <Layer className={styles.tableContainer}>

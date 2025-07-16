@@ -1,4 +1,10 @@
-import { PatientIdentifier, showNotification, useConfig, type Location, type Patient } from '@openmrs/esm-framework';
+import {
+  type PatientIdentifier,
+  showNotification,
+  useConfig,
+  type Location,
+  type Patient,
+} from '@openmrs/esm-framework';
 import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import {

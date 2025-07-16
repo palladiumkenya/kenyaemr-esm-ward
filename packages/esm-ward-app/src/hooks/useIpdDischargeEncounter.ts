@@ -1,6 +1,6 @@
 import {
-  Encounter,
-  FetchResponse,
+  type Encounter,
+  type FetchResponse,
   fhirBaseUrl,
   openmrsFetch,
   restBaseUrl,
@@ -8,7 +8,7 @@ import {
   useFhirPagination,
 } from '@openmrs/esm-framework';
 import { useMemo, useState } from 'react';
-import { WardConfigObject } from '../config-schema';
+import { type WardConfigObject } from '../config-schema';
 import useWardLocation from './useWardLocation';
 import useSWR from 'swr';
 
