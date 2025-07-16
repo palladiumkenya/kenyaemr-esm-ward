@@ -32,7 +32,7 @@ const DefaultWardView = () => {
         value: `${summary.awaitingAdmissionPatient}`,
       },
       { label: t('admitted', 'Admitted'), value: `${summary.admittedPatients}` },
-      { label: t('dischargIn', 'Discaharg In'), value: `${summary.dischargeInPatients}` },
+      { label: t('dischargeIn', 'Discharge In'), value: `${summary.dischargeInPatients}` },
       { label: t('discharge', 'Discharge'), value: `${summary.dischargedPatients}` },
     ];
   }, [t, summary]);
