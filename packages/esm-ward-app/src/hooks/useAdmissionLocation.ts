@@ -25,8 +25,8 @@ const requestRep =
  * @param rep the "v=" representation parameter
  * @returns
  */
-export function useAdmissionLocation(rep: string = requestRep) {
-  const { location } = useWardLocation();
+export function useAdmissionLocation(rep: string = requestRep, overideLocation:string|null=null) {
+  const { location } = useWardLocation(overideLocation);
 
   const isBedManagementModuleInstalled = useFeatureFlag('bedmanagement-module');
 
