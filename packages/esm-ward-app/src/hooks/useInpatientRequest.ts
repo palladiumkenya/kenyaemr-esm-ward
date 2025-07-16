@@ -20,8 +20,9 @@ const defaultRep =
 export function useInpatientRequest(
   dispositionType: Array<DispositionType> = ['ADMIT', 'TRANSFER'],
   rep: string = defaultRep,
+  overrideLocation?:string
 ) {
-  const { location } = useWardLocation();
+  const { location } = useWardLocation(overrideLocation);
   const searchParams = new URLSearchParams();
   searchParams.set('dispositionType', dispositionType.join(','));
   searchParams.set('dispositionLocation', location?.uuid);

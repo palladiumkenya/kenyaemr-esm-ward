@@ -1,26 +1,26 @@
-import React, { useMemo } from 'react';
-import styles from './linelist-wards.scss';
-import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
-import { DataTableSkeleton } from '@carbon/react';
-import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
-import { useTranslation } from 'react-i18next';
-import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
-import { Layer } from '@carbon/react';
 import {
   DataTable,
-  TableContainer,
+  DataTableSkeleton,
+  Layer,
+  Pagination,
   Table,
-  TableHead,
-  TableRow,
-  TableHeader,
   TableBody,
   TableCell,
-  Pagination,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Tile,
 } from '@carbon/react';
-import { Search } from '@carbon/react';
+import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
+import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
 import { AdmissionLocationFetchResponse } from '../../types';
-import { Tile } from '@carbon/react';
 import { EmptyState } from '../../ward-patients/table-state-components';
+import styles from './linelist-wards.scss';
+import WardPendingOutCell from './WardPendingOutCell';
 const LineListTable = () => {
   const {
     admissionLocations,
@@ -65,7 +65,7 @@ const LineListTable = () => {
         ),
         freebeds: location.totalBeds - location.occupiedBeds,
         bedOccupancy: calculateOccupancy(location),
-        // pendingOut:
+        pendingOut: <WardPendingOutCell locationUuid={location.ward.uuid} />,
       };
     });
   }, [admissionLocations, calculateOccupancy]);
@@ -86,7 +86,6 @@ const LineListTable = () => {
       <CardHeader title={headerTitle}>
         <></>
       </CardHeader>
-      <Search />
       <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
         {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (
           <TableContainer className={styles.claimsTable}>

@@ -4,18 +4,19 @@ import Filters from './Filters';
 import Metrics from './Metrics';
 import LineListTable from './LineListTable';
 import { useTranslation } from 'react-i18next';
+import { useWardsSummaryMetrics } from '../../hooks/useSummaryMetrics';
 
 const WardsLineList = () => {
   const { t } = useTranslation();
-  // TODO here to replace the mocked values
+  const summary = useWardsSummaryMetrics();
   const cards = useMemo(() => {
     return [
-      { label: t('numberOfBeds', 'Number of Beds'), value: '40' },
-      { label: t('admittedPatients', 'Admitted Patients'), value: '150' },
-      { label: t('freebeds', 'Free Beds'), value: '20' },
-      { label: t('bedOccupancy', 'Bed Occupancy %'), value: '50%' },
+      { label: t('numberOfBeds', 'Number of Beds'), value: `${summary.totalBeds}` },
+      { label: t('admittedPatients', 'Admitted Patients'), value: `${summary.admittedPatients}` },
+      { label: t('freebeds', 'Free Beds'), value: `${summary.freeBeds}` },
+      { label: t('bedOccupancy', 'Bed Occupancy %'), value: summary.bedOccupancy },
     ];
-  }, [t]);
+  }, [t, summary]);
   return (
     <div>
       <Header title={t('wards', 'Wards')} />

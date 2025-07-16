@@ -7,7 +7,7 @@ const isUUID = (value?: string) => {
   return regex.test(value);
 };
 
-export default function useWardLocation(): {
+export default function useWardLocation(overrideLocation?: string): {
   location: Location;
   isLoadingLocation: boolean;
   errorFetchingLocation: Error | undefined;
@@ -27,11 +27,11 @@ export default function useWardLocation(): {
     data: locationResponse,
     isLoading: isLoadingLocation,
     error: errorFetchingLocation,
-  } = useLocation(locationUuidFromUrl ? locationUuidFromUrl : null);
+  } = useLocation(overrideLocation ? overrideLocation : locationUuidFromUrl ? locationUuidFromUrl : null);
   const invalidLocation = locationUuidFromUrl && errorFetchingLocation;
 
   return {
-    location: locationUuidFromUrl ? locationResponse?.data : sessionLocation,
+    location: locationUuidFromUrl||overrideLocation ? locationResponse?.data : sessionLocation,
     isLoadingLocation,
     errorFetchingLocation,
     invalidLocation,

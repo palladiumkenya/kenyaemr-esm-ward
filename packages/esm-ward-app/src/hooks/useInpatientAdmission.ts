@@ -5,8 +5,8 @@ import useWardLocation from './useWardLocation';
 /**
  * fetches a list of inpatient admissions for the current ward location
  */
-export function useInpatientAdmission() {
-  const { location } = useWardLocation();
+export function useInpatientAdmission(overrideLocation?:string) {
+  const { location } = useWardLocation(overrideLocation);
   // prettier-ignore
   const customRepresentation =
     'custom:(visit:('+
