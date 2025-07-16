@@ -77,12 +77,6 @@ const AdmittedPatients = () => {
       );
       if (!ipdDischargeEncounter) return true;
       return false;
-      // const obs = ipdDischargeEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-      // if (!obs) return true;
-      // const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
-      //   (obs.value as OpenmrsResource).uuid,
-      // );
-      // return isDischargedIn === false;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 

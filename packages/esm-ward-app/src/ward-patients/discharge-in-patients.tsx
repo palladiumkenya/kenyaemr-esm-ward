@@ -84,12 +84,6 @@ const DischargeInPatients = () => {
       );
       if (!ipdDischargeEncounter) return false;
       return true;
-      // const obs = ipdDischargeEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-      // if (!obs) return false;
-      // const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
-      //   (obs.value as OpenmrsResource).uuid,
-      // );
-      // return isDischargedIn === true;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
