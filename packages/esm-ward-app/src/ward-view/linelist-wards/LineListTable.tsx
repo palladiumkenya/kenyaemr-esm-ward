@@ -1,27 +1,27 @@
-import React, { useMemo } from 'react';
-import styles from './linelist-wards.scss';
-import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
 import {
-  DataTableSkeleton,
   DataTable,
-  TableContainer,
+  DataTableSkeleton,
+  Layer,
+  Pagination,
   Table,
-  TableHead,
-  TableRow,
-  TableHeader,
   TableBody,
   TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
   Tile,
-  Pagination,
-  Layer,
-  Search,
 } from '@carbon/react';
 import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
+import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
-import { CardHeader } from '@openmrs/esm-patient-common-lib/src';
+import React, { useMemo } from 'react';
+import { useAdmisiionLocations } from '../../hooks/useAdmissionLocation';
+import styles from './linelist-wards.scss';
 
 import { type AdmissionLocationFetchResponse } from '../../types';
 import { EmptyState } from '../../ward-patients/table-state-components';
+import WardPendingOutCell from './WardPendingOutCell';
 const LineListTable = () => {
   const {
     admissionLocations,
@@ -48,7 +48,6 @@ const LineListTable = () => {
   ];
   const calculateOccupancy = (location: AdmissionLocationFetchResponse) => {
     if (!location.totalBeds || !location.occupiedBeds) return 0;
-
     return (((location.totalBeds - location.occupiedBeds) / location.totalBeds) * 100).toFixed(2);
   };
   const tableRows = useMemo(() => {
@@ -66,7 +65,7 @@ const LineListTable = () => {
         ),
         freebeds: location.totalBeds - location.occupiedBeds,
         bedOccupancy: calculateOccupancy(location),
-        // pendingOut:
+        pendingOut: <WardPendingOutCell locationUuid={location.ward.uuid} />,
       };
     });
   }, [admissionLocations]);
@@ -87,7 +86,6 @@ const LineListTable = () => {
       <CardHeader title={headerTitle}>
         <></>
       </CardHeader>
-      <Search />
       <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
         {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (
           <TableContainer className={styles.claimsTable}>

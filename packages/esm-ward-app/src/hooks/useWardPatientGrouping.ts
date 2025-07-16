@@ -6,11 +6,11 @@ import { useInpatientRequest } from './useInpatientRequest';
 import { useInpatientAdmissionByPatients } from './useInpatientAdmissionByPatients';
 import useWardLocation from './useWardLocation';
 
-export function useWardPatientGrouping() {
-  const admissionLocationResponse = useAdmissionLocation();
-  const inpatientAdmissionAtCurrentLocationResponse = useInpatientAdmission();
-  const inpatientRequestResponse = useInpatientRequest();
-  const { location: currentLocation } = useWardLocation();
+export function useWardPatientGrouping(overrideLocation?: string) {
+  const admissionLocationResponse = useAdmissionLocation(undefined, overrideLocation);
+  const inpatientAdmissionAtCurrentLocationResponse = useInpatientAdmission(overrideLocation);
+  const inpatientRequestResponse = useInpatientRequest(undefined, undefined, overrideLocation);
+  const { location: currentLocation } = useWardLocation(overrideLocation);
 
   const { data: inpatientAdmissions } = inpatientAdmissionAtCurrentLocationResponse;
   const { admissionLocation } = admissionLocationResponse;
