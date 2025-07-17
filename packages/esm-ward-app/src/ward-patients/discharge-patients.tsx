@@ -17,7 +17,13 @@ import { useTranslation } from 'react-i18next';
 import { EmptyState, ErrorState } from './table-state-components';
 import { useIpdDischargeEncounter } from '../hooks/useIpdDischargeEncounter';
 import { formatDatetime, parseDate } from '@openmrs/esm-framework';
-import { PatientAdmissionDateCell, PatientAgeCell, PatientDayInWardCell, PatientGenderCell } from './patient-cells';
+import {
+  HyperLinkPatientCell,
+  PatientAdmissionDateCell,
+  PatientAgeCell,
+  PatientDayInWardCell,
+  PatientGenderCell,
+} from './patient-cells';
 
 const DischargePatients = () => {
   const { t } = useTranslation();
@@ -51,7 +57,7 @@ const DischargePatients = () => {
         dischargeDate: encounter.encounterDateTime ? formatDatetime(parseDate(encounter.encounterDateTime)) : '--',
         admissionDate: <PatientAdmissionDateCell patientUuid={encounter.patient.uuid} encounterUuid={encounter.uuid} />,
         idNumber: encounter.patient.openmrsId,
-        name: encounter.patient.name,
+        name: <HyperLinkPatientCell patientName={encounter.patient.name} patientUuid={encounter.patient.uuid} />, //encounter.patient.name,
         gender: <PatientGenderCell patientUuid={encounter.patient.uuid} />,
         age: <PatientAgeCell patientUuid={encounter.patient.uuid} />,
         bedNumber: '--',
@@ -69,7 +75,7 @@ const DischargePatients = () => {
   if (isLoading) return <DataTableSkeleton />;
   if (error) return <ErrorState error={error} />;
 
-  if (!encounters?.length) return <EmptyState message={t('noDischargepatients', 'No Discharge patients')} />;
+  if (!encounters?.length) return <EmptyState message={t('noDischargedPatients', 'No Discharged patients')} />;
 
   return (
     <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>

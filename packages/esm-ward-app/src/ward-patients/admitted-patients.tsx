@@ -29,6 +29,7 @@ import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import { EmptyState } from './table-state-components';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { type WardConfigObject } from '../config-schema';
+import { HyperLinkPatientCell } from './patient-cells';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
@@ -71,16 +72,11 @@ const AdmittedPatients = () => {
         })
         ?.flat() ?? []
     ).filter((pat) => {
-      const noteEncounter = pat?.visit?.encounters?.find(
-        (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
+      const ipdDischargeEncounter = pat?.visit?.encounters?.find(
+        (encounter) => encounter.encounterType?.uuid === config.ipdDischargeEncounterTypeUuid,
       );
-      if (!noteEncounter) return true;
-      const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-      if (!obs) return true;
-      const isDischargedIn = [config.referringToAnotherFacilityConceptUuid, config.dischargeHomeConceptUuid].includes(
-        (obs.value as OpenmrsResource).uuid,
-      );
-      return isDischargedIn === false;
+      if (!ipdDischargeEncounter) return true;
+      return false;
     });
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
@@ -104,7 +100,9 @@ const AdmittedPatients = () => {
         id: patient.patient?.uuid ?? index,
         admissionDate,
         idNumber: getOpenmrsId(patient.patient?.identifiers ?? []) ?? '--',
-        name: patient.patient?.person?.display ?? '--',
+        name: (
+          <HyperLinkPatientCell patientName={patient.patient?.person?.display} patientUuid={patient.patient?.uuid} />
+        ),
         gender: patient.patient?.person?.gender ?? '--',
         age: patient.patient?.person?.age ?? '--',
         bedNumber: patient.bed?.bedNumber ?? '--',
@@ -134,24 +132,13 @@ const AdmittedPatients = () => {
               }
             />
             <OverflowMenuItem
-              itemText={t('dischargeIn', 'Discharge In')}
-              onClick={() => {
-                launchWorkspace('patient-discharge-workspace', {
-                  wardPatient: patient,
-                  patientUuid: patient.patient.uuid,
-                  formUuid: config.doctorsNoteFormUuid,
-                  workspaceTitle: t('doctorsNote', 'Doctors Note'),
-                  dischargePatientOnSuccesfullSubmission: false,
-                });
-              }}
-            />
-            <OverflowMenuItem
               itemText={t('discharge', 'Discharge')}
               onClick={() => {
                 launchWorkspace('patient-discharge-workspace', {
                   wardPatient: patient,
                   patientUuid: patient.patient.uuid,
                   formUuid: config.inpatientDischargeFormUuid,
+                  dischargePatientOnSuccesfullSubmission: false,
                 });
               }}
             />

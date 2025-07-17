@@ -60,27 +60,14 @@ export const useWardSummaryMetrics = () => {
         const inpatientAdmission = wardPatientGroupDetails.wardAdmittedPatientsWithBed?.get(patient.uuid);
         if (inpatientAdmission) {
           const { visit } = inpatientAdmission;
-          const noteEncounter = visit?.encounters?.find(
-            (encounter) => encounter.encounterType?.uuid === config.doctorsnoteEncounterTypeUuid,
+          const ipdDischargeEncounter = visit?.encounters?.find(
+            (encounter) => encounter.encounterType?.uuid === config.ipdDischargeEncounterTypeUuid,
           );
-          if (!noteEncounter) {
+          if (!ipdDischargeEncounter) {
             admittedPatients++;
-            continue;
-          }
-          const obs = noteEncounter.obs.find((ob) => ob.concept.uuid === config.referralsConceptUuid);
-          if (!obs) {
-            admittedPatients++;
-            continue;
-          }
-          const isDischargedIn = [
-            config.referringToAnotherFacilityConceptUuid,
-            config.dischargeHomeConceptUuid,
-          ].includes((obs.value as OpenmrsResource).uuid);
-          if (isDischargedIn) {
-            dischargeInPatients++;
             continue;
           } else {
-            admittedPatients++;
+            dischargeInPatients++;
             continue;
           }
         } else {
