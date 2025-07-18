@@ -270,7 +270,7 @@ export const configSchema: ConfigSchema = {
     _default: '14b36860-5033-4765-b91b-ace856ab64c2',
   },
   admissionEncounterTypeUuid: {
-    _description: "Admission encounter type",
+    _description: 'Admission encounter type',
     _type: Type.String,
     _default: 'e22e39fd-7db2-45e7-80f1-60fa0d5a4378',
   },
@@ -299,6 +299,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '98a781d2-b777-4756-b4c9-c9b0deb3483c',
   },
+  mortuaryAdmissionLoctionTagUuid: {
+    _description: 'Mortuary admission location tag uuid',
+    _type: Type.String,
+    _default: '1dbbfe22-d21f-499c-bf33-cc9f75b6c7e8',
+  },
 };
 
 export interface WardConfigObject {
@@ -318,8 +323,9 @@ export interface WardConfigObject {
   referralsConceptUuid: string;
   referringToAnotherFacilityConceptUuid: string;
   dischargeHomeConceptUuid: string;
-  doctorsNoteFormUuid:string
-  inpatientDischargeFormUuid:string
+  doctorsNoteFormUuid: string;
+  inpatientDischargeFormUuid: string;
+  mortuaryAdmissionLoctionTagUuid: string;
 }
 
 export interface PendingItemsElementConfig {
