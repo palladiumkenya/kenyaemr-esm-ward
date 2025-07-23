@@ -22,6 +22,7 @@ interface BedDropdownItem {
   bedId: number;
   label: string;
   disabled: boolean;
+  bedType: string;
 }
 
 const BedSelector: React.FC<BedSelectorProps> = ({
@@ -43,14 +44,19 @@ const BedSelector: React.FC<BedSelectorProps> = ({
       bedLayout.patients.length === 0
         ? [t('emptyText', 'Empty')]
         : bedLayout.patients.map((patient) => patient?.person?.preferredName?.display);
-    return [bedNumber, ...patients].join(' · ');
+    return [bedNumber, bedLayout?.bedType?.displayName ?? 'Type unconfigured', ...patients].join(' · ');
   };
 
   const bedDropdownItems: BedDropdownItem[] = [
-    { bedId: 0, label: t('noBed', 'No bed'), disabled: false },
+    { bedId: 0, label: t('noBed', 'No bed'), bedType: '', disabled: false },
     ...beds.map((bed) => {
       const isPatientAssignedToBed = bed.patients.some((bedPatient) => bedPatient.uuid === currentPatient.uuid);
-      return { bedId: bed.bedId, label: getBedRepresentation(bed), disabled: isPatientAssignedToBed };
+      return {
+        bedId: bed.bedId,
+        label: getBedRepresentation(bed),
+        bedType: bed?.bedType?.displayName ?? '',
+        disabled: isPatientAssignedToBed,
+      };
     }),
   ];
   const selectedItem = bedDropdownItems.find((bed) => bed.bedId === selectedBedId);
@@ -82,7 +88,7 @@ const BedSelector: React.FC<BedSelectorProps> = ({
     return (
       <Dropdown
         id="default"
-        titleText=""
+        titleText={t('selectABed', 'Select a bed')}
         helperText=""
         label={!selectedItem && t('chooseAnOption', 'Choose an option')}
         items={bedDropdownItems}
@@ -101,7 +107,7 @@ const BedSelector: React.FC<BedSelectorProps> = ({
         onChange={onChange}
         invalid={!!error}
         invalidText={error?.message}>
-        {bedDropdownItems.map(({ bedId, label, disabled }) => (
+        {bedDropdownItems.map(({ bedId, label, bedType, disabled }) => (
           <RadioButton
             key={bedId}
             labelText={label}
