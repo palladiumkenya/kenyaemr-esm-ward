@@ -6,27 +6,40 @@ import { useIpdDischargeEncounter } from './useIpdDischargeEncounter';
 import { useWardPatientGrouping } from './useWardPatientGrouping';
 
 export const useWardsSummaryMetrics = () => {
-  const rep = 'custom:(totalBeds,occupiedBeds,bedLayouts:(patients:(uuid,display)))';
+  const rep = 'custom:(uuid,display,tags:(uuid,display),totalBeds,occupiedBeds,bedLayouts:(patients:(uuid,display)))';
 
   const apiUrl = `${restBaseUrl}/admissionLocation?v=${rep}`;
   const { data = [], isLoading, error } = useOpenmrsFetchAll<AdmissionLocationFetchResponse>(apiUrl);
+  const { mortuaryAdmissionLoctionTagUuid } = useConfig<WardConfigObject>();
+
+  const filteredData = useMemo(() => {
+    if (!mortuaryAdmissionLoctionTagUuid) return data;
+
+    return data.filter((location) => {
+      const hasMortuaryTag = location.ward.tags?.some((tag) => tag.uuid === mortuaryAdmissionLoctionTagUuid);
+      return !hasMortuaryTag;
+    });
+  }, [data, mortuaryAdmissionLoctionTagUuid]);
+
   const totalBeds = useMemo(() => {
-    return data.reduce((prev, curr) => {
+    return filteredData.reduce((prev, curr) => {
       return prev + curr.totalBeds;
     }, 0);
-  }, [data]);
+  }, [filteredData]);
+
   const occupiedBeds = useMemo(() => {
-    return data.reduce((prev, curr) => {
+    return filteredData.reduce((prev, curr) => {
       return prev + curr.occupiedBeds;
     }, 0);
-  }, [data]);
+  }, [filteredData]);
+
   const bedOccupancy = useMemo(() => {
     if (!totalBeds || !occupiedBeds) return `0%`;
     return `${((occupiedBeds / totalBeds) * 100).toFixed(2)}%`;
   }, [totalBeds, occupiedBeds]);
 
   const admittedPatients = useMemo(() => {
-    return data.reduce((prev, curr) => {
+    return filteredData.reduce((prev, curr) => {
       return (
         prev +
         curr.bedLayouts?.reduce((p, c) => {
@@ -34,7 +47,8 @@ export const useWardsSummaryMetrics = () => {
         }, 0)
       );
     }, 0);
-  }, [totalBeds, occupiedBeds, data]);
+  }, [filteredData]);
+
   return {
     totalBeds,
     occupiedBeds,
