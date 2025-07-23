@@ -420,6 +420,11 @@ export const configSchema: ConfigSchema = {
     _description: 'Encounter provider role',
     _default: "'a0b03050-c99b-11e0-9572-0800200c9a66'",
   },
+  mortuaryAdmissionLoctionTagUuid: {
+    _description: 'Mortuary admission location tag uuid',
+    _type: Type.String,
+    _default: '1dbbfe22-d21f-499c-bf33-cc9f75b6c7e8',
+  },
 };
 
 export interface WardConfigObject {
@@ -454,10 +459,11 @@ export interface WardConfigObject {
     emmergencyDoctor: string;
     emmergencyDoctorPhoneNumber: string;
     admissionDateTime: string;
-    chiefComplaint:string
+    chiefComplaint: string;
   };
   diagnosisConceptSourceUud: string;
   inpatientAdmissionEncounterProviderRole: string;
+  mortuaryAdmissionLoctionTagUuid: string;
 }
 
 export interface PendingItemsElementConfig {

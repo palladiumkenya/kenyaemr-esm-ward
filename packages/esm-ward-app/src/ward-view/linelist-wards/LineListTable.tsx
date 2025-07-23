@@ -12,7 +12,7 @@ import {
   TableRow,
   Tile,
 } from '@carbon/react';
-import { ConfigurableLink, ErrorState } from '@openmrs/esm-framework';
+import { ConfigurableLink, ErrorState, useConfig } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';
@@ -22,6 +22,8 @@ import styles from './linelist-wards.scss';
 import { type AdmissionLocationFetchResponse } from '../../types';
 import { EmptyState } from '../../ward-patients/table-state-components';
 import WardPendingOutCell from './WardPendingOutCell';
+import { type WardConfigObject } from '../../config-schema';
+
 const LineListTable = () => {
   const {
     admissionLocations,
@@ -37,6 +39,17 @@ const LineListTable = () => {
   } = useAdmisiionLocations();
   const { t } = useTranslation();
   const headerTitle = t('wards', 'Wards');
+  const { mortuaryAdmissionLoctionTagUuid } = useConfig<WardConfigObject>();
+
+  const filteredAdmissionLocations = useMemo(() => {
+    if (!mortuaryAdmissionLoctionTagUuid) return admissionLocations;
+
+    return admissionLocations.filter((location) => {
+      const hasMortuaryTag = location.ward.tags?.some((tag) => tag.uuid === mortuaryAdmissionLoctionTagUuid);
+      return !hasMortuaryTag;
+    });
+  }, [admissionLocations, mortuaryAdmissionLoctionTagUuid]);
+
   const headers = [
     { key: 'ward', header: t('wardName', 'Ward Name') },
     { key: 'numberOfBeds', header: t('numberofbeds', 'Number of Beds') },
@@ -46,12 +59,14 @@ const LineListTable = () => {
     { key: 'pendingOut', header: t('pendingOut', 'Pending Out') },
     { key: 'action', header: t('action', 'Action') },
   ];
+
   const calculateOccupancy = (location: AdmissionLocationFetchResponse) => {
     if (!location.totalBeds || !location.occupiedBeds) return 0;
     return (((location.totalBeds - location.occupiedBeds) / location.totalBeds) * 100).toFixed(2);
   };
+
   const tableRows = useMemo(() => {
-    return admissionLocations.map((location) => {
+    return filteredAdmissionLocations.map((location) => {
       const url = '${openmrsSpaBase}/home/ward/${locationUuid}';
 
       return {
@@ -68,19 +83,22 @@ const LineListTable = () => {
         pendingOut: <WardPendingOutCell locationUuid={location.ward.uuid} />,
       };
     });
-  }, [admissionLocations]);
+  }, [filteredAdmissionLocations]);
+
   if (isLoading)
     return (
       <Layer className={styles.tableContainer}>
         <DataTableSkeleton />
       </Layer>
     );
+
   if (error)
     return (
       <Layer className={styles.tableContainer}>
         <ErrorState headerTitle={headerTitle} error={error} />
       </Layer>
     );
+
   return (
     <Tile className={styles.tableContainer}>
       <CardHeader title={headerTitle}>
