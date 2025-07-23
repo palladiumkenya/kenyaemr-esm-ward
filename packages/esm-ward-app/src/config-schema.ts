@@ -304,7 +304,7 @@ export const configSchema: ConfigSchema = {
       insurancePaymentMethod: '95d2b358-ef3b-4a41-9215-06bfc9ef107e',
       otherInsuaranceType: '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       insuranceOtherSpecify: '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      primaryDoctor: '1725AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      primaryDoctor: '2b537713-298c-4b60-83c3-8006ea622d70',
       primaryDoctorPhoneNumber: '159635AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       emmergencyDoctor: '1473AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       emmergencyDoctorPhoneNumber: '163152AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
