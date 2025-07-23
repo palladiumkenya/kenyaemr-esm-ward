@@ -44,14 +44,14 @@ export function useAdmitPatient() {
   const { createEncounter, emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } =
     useCreateEncounter();
 
-  const admitPatient = (patient: Patient, dispositionType: DispositionType, visitUuid: string) => {
+  const admitPatient = (patient: Patient, dispositionType: DispositionType, visitUuid: string, obs?: ObsPayload[]) => {
     const encounterType =
       dispositionType === 'ADMIT'
         ? emrConfiguration.admissionEncounterType
         : dispositionType === 'TRANSFER'
           ? emrConfiguration.transferWithinHospitalEncounterType
           : null;
-    return createEncounter(patient, encounterType, visitUuid);
+    return createEncounter(patient, encounterType, visitUuid, obs);
   };
 
   return { admitPatient, isLoadingEmrConfiguration, errorFetchingEmrConfiguration };

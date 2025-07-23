@@ -11,7 +11,7 @@ import useWardLocation from './useWardLocation';
 import { useState } from 'react';
 
 const requestRep =
-  'custom:(ward,totalBeds,occupiedBeds,bedLayouts:(rowNumber,columnNumber,bedNumber,bedId,bedUuid,status,location,patients:(person:full,identifiers,uuid)))';
+  'custom:(ward,totalBeds,occupiedBeds,bedLayouts:(rowNumber,bedType,columnNumber,bedNumber,bedId,bedUuid,status,location,patients:(person:full,identifiers,uuid)))';
 
 /**
  *
@@ -25,7 +25,7 @@ const requestRep =
  * @param rep the "v=" representation parameter
  * @returns
  */
-export function useAdmissionLocation(rep: string = requestRep, overrideLocation:string|null=null) {
+export function useAdmissionLocation(rep: string = requestRep, overrideLocation: string | null = null) {
   const { location } = useWardLocation(overrideLocation);
   const isBedManagementModuleInstalled = useFeatureFlag('bedmanagement-module');
 

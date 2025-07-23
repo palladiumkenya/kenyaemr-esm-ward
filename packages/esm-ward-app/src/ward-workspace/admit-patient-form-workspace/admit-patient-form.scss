@@ -2,6 +2,41 @@
 @use '@carbon/layout';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.grid {
+  margin: layout.$spacing-05 layout.$spacing-05;
+  padding: layout.$spacing-05 0 0 0;
+}
+
+.button {
+  display: flex;
+  align-content: flex-start;
+  align-items: baseline;
+  min-width: 50%;
+}
+
+.buttonSet {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.datePickerInput span,
+.datePickerInput div,
+.datePickerInput input,
+.datePickerInput {
+  min-width: 100%;
+}
+
+
 .flexWrapper {
   height: 100%;
   display: flex;
@@ -9,34 +44,12 @@
   color: #393939;
 }
 
-.form {
-  display: flex;
-  height: 100%;
-  justify-content: space-between;
-  flex-direction: column;
-}
-
-.formContent {
-  padding: layout.$spacing-05;
-}
-
 .formError {
-  margin: (-(layout.$spacing-05)) (-(layout.$spacing-05)) layout.$spacing-05 (-(layout.$spacing-05));
-}
-
-.buttonSet button {
-  max-width: unset !important;
-  width: 50% !important;
-}
-
-.bedSelectionDropdown {
-  margin-top: layout.$spacing-03;
+  margin: (-(layout.$spacing-05)) (-(layout.$spacing-05)) layout.$spacing-05 (
+    -(layout.$spacing-05)
+  );
 }
 
 .errorNotifications {
   margin-top: layout.$spacing-05;
-}
-
-.productiveHeading02 {
-  @include type.type-style('heading-compact-02');
 }
