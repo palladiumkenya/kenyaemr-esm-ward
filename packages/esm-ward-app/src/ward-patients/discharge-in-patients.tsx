@@ -123,7 +123,7 @@ const DischargeInPatients = () => {
             <OverflowMenuItem
               itemText={t('discharged', 'Discharged')}
               onClick={async () => {
-                // TODO Clean up 
+                // TODO Clean up
                 await handleDischarge({} as Encounter, patient, emrConfiguration as Record<string, any>, patient.visit);
                 // launchWorkspace('patient-discharge-workspace', {
                 //   wardPatient: patient,
@@ -136,7 +136,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [results, config, t, emrConfiguration, handleDischarge]);
+  }, [results, t, emrConfiguration, handleDischarge]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 

@@ -19,7 +19,7 @@ import { showSnackbar, useAppContext, useConfig } from '@openmrs/esm-framework';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { WardConfigObject } from '../../config-schema';
+import { type WardConfigObject } from '../../config-schema';
 import { useAssignedBedByPatient } from '../../hooks/useAssignedBedByPatient';
 import useWardLocation from '../../hooks/useWardLocation';
 import type { WardPatientWorkspaceProps, WardViewContext } from '../../types';
@@ -30,7 +30,7 @@ import styles from './admit-patient-form.scss';
 import DiagnosisInput from './diagnosis-input.component';
 import {
   formValuesToObs,
-  InapatientAdmissionFormData,
+  type InapatientAdmissionFormData,
   inpatientAdmissionSchema,
   useProviders,
 } from './patient-admission.resources';
