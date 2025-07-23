@@ -264,11 +264,6 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '7e618d13-ffdb-4650-9a97-10ccd16ca36d',
   },
-  doctorsnoteEncounterTypeUuid: {
-    _description: "Doctor's Note encounter type",
-    _type: Type.String,
-    _default: '14b36860-5033-4765-b91b-ace856ab64c2',
-  },
   admissionEncounterTypeUuid: {
     _description: 'Admission encounter type',
     _type: Type.String,
@@ -294,11 +289,6 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '1692AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   },
-  doctorsNoteFormUuid: {
-    _description: 'Doctors note form uuid',
-    _type: Type.String,
-    _default: '87379b0a-738b-4799-9736-cdac614cee2a',
-  },
   inpatientDischargeFormUuid: {
     _description: 'IPD Discharge form uuid',
     _type: Type.String,
@@ -314,6 +304,7 @@ export const configSchema: ConfigSchema = {
       insurancePaymentMethod: '95d2b358-ef3b-4a41-9215-06bfc9ef107e',
       otherInsuaranceType: '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       insuranceOtherSpecify: '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      primaryDoctor: '1725AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       primaryDoctorPhoneNumber: '159635AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       emmergencyDoctor: '1473AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       emmergencyDoctorPhoneNumber: '163152AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
@@ -348,67 +339,6 @@ export const configSchema: ConfigSchema = {
         concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
         label: 'Policy Holder',
       },
-      // TODO Concept uuid updates (bellow are same)
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'KENYA ALLIANCE',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'MADISON',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'BRITAM',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'CIC',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'PACIS',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'AAR',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'GA',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'APA',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'JUBILEE',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'AKL',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'EQUITY',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'LIASON',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'DEFMIS',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'FIRST ASSURANCE',
-      // },
-      // {
-      //   concept: '1917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-      //   label: 'SECCO AFIA',
-      // },
       {
         concept: '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
         label: 'OTHER',
@@ -441,12 +371,10 @@ export interface WardConfigObject {
   ipdDischargeEncounterTypeUuid: string;
   inpatientDischargeFormUuid: string;
   transferRequestEncounterTypeUuid: string;
-  doctorsnoteEncounterTypeUuid: string;
   admissionEncounterTypeUuid: string;
   referralsConceptUuid: string;
   referringToAnotherFacilityConceptUuid: string;
   dischargeHomeConceptUuid: string;
-  doctorsNoteFormUuid: string;
   insuaranceTypes: Array<{ label: string; concept: string }>;
   conceptUuidForWardAdmission: {
     paymentMethod: string;
@@ -456,6 +384,7 @@ export interface WardConfigObject {
     otherInsuaranceType: string;
     insuranceOtherSpecify: string;
     primaryDoctorPhoneNumber: string;
+    primaryDoctor:string
     emmergencyDoctor: string;
     emmergencyDoctorPhoneNumber: string;
     admissionDateTime: string;

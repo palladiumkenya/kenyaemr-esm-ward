@@ -77,11 +77,10 @@ export const formValuesToObs = (data: InapatientAdmissionFormData, config: WardC
       concept: config.conceptUuidForWardAdmission.admissionDateTime,
       value: formartDate(data?.admissionDate),
     },
-    // TODO Consult on how to handle primary doctor
-    // {
-    //   concept: config.conceptUuidForWardAdmission.emmergencyDoctor,
-    //   value: data.primaryDoctor,
-    // },
+    {
+      concept: config.conceptUuidForWardAdmission.primaryDoctor,
+      value: data.primaryDoctor,
+    },
     {
       concept: config.conceptUuidForWardAdmission.chiefComplaint,
       value: data.diagnosis,

@@ -1,6 +1,6 @@
 import { ComboBox } from '@carbon/react';
 import React from 'react';
-import { Control, Controller, Path } from 'react-hook-form';
+import { type Control, Controller, type Path } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDiagnoses } from './patient-admission.resources';
 
