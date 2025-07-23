@@ -1,7 +1,7 @@
-import { Concept, restBaseUrl, useConfig, useDebounce, useOpenmrsFetchAll } from '@openmrs/esm-framework';
+import { type Concept, restBaseUrl, useConfig, useDebounce, useOpenmrsFetchAll } from '@openmrs/esm-framework';
 import { useMemo, useState } from 'react';
 import z from 'zod';
-import { WardConfigObject } from '../../config-schema';
+import { type WardConfigObject } from '../../config-schema';
 import dayjs from 'dayjs';
 export const useDiagnoses = () => {
   const { diagnosisConceptSourceUud } = useConfig<WardConfigObject>();
@@ -27,7 +27,7 @@ export const useDiagnoses = () => {
             uuid: c.uuid,
           };
         }),
-    [data],
+    [data, diagnosisConceptSourceUud],
   );
   return {
     diagnoses,

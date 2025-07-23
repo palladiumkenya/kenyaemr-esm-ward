@@ -136,7 +136,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [results, config, t]);
+  }, [results, config, t, emrConfiguration, handleDischarge]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 
