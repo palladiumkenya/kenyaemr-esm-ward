@@ -30,7 +30,7 @@ import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
 import dayjs from 'dayjs';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { type WardConfigObject } from '../config-schema';
-import { HyperLinkPatientCell } from './patient-cells';
+import { HyperLinkPatientCell, PatientBillStatus, UnAssignPatientBedAction } from './patient-cells';
 import { usePatientDischarge } from '../ward-workspace/kenya-emr-patient-discharge/patient-discharge.resource';
 
 const DischargeInPatients = () => {
@@ -50,6 +50,7 @@ const DischargeInPatients = () => {
     { key: 'age', header: t('age', 'Age') },
     { key: 'bedNumber', header: t('bedNumber', 'Bed Number') },
     { key: 'daysAdmitted', header: t('durationOnWard', 'Duration on Ward') },
+    { key: 'billStatus', header: t('billStatus', 'Bill Status') },
     { key: 'action', header: t('action', 'Action') },
   ];
 
@@ -115,28 +116,29 @@ const DischargeInPatients = () => {
         age: patient.patient?.person?.age ?? '--',
         bedNumber: patient.bed?.bedNumber ?? '--',
         daysAdmitted,
+        billStatus: (
+          <PatientBillStatus
+            patientUuid={patient.patient.uuid}
+            encounterUuid={encounterAssigningToCurrentInpatientLocation?.uuid}
+          />
+        ),
         action: (
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem itemText={t('goToBilling', 'Go to Billing')} onClick={() => {}} />
             <OverflowMenuItem itemText={t('waivePatient', 'Waive Patient')} onClick={() => {}} />
             <OverflowMenuItem itemText={t('patientAbscondend', 'Patient Absconded')} onClick={() => {}} />
-            <OverflowMenuItem
-              itemText={t('discharged', 'Discharged')}
+            <UnAssignPatientBedAction
+              patientUuid={patient.patient.uuid}
+              encounterUuid={encounterAssigningToCurrentInpatientLocation?.uuid}
               onClick={async () => {
-                // TODO Clean up 
                 await handleDischarge({} as Encounter, patient, emrConfiguration as Record<string, any>, patient.visit);
-                // launchWorkspace('patient-discharge-workspace', {
-                //   wardPatient: patient,
-                //   patientUuid: patient.patient.uuid,
-                //   formUuid: config.inpatientDischargeFormUuid,
-                // });
               }}
             />
           </OverflowMenu>
         ),
       };
     });
-  }, [results, config, t, emrConfiguration, handleDischarge]);
+  }, [results, t, emrConfiguration, handleDischarge]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 

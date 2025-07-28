@@ -355,6 +355,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '1dbbfe22-d21f-499c-bf33-cc9f75b6c7e8',
   },
+  dailyBedFeeBillableService: {
+    _description: 'Daily Bed Fee bILLABLE SERVICE uuid',
+    _type: Type.UUID,
+    _default: '37ce491f-b2dd-4433-b203-efebb8ba1469',
+  },
 };
 
 export interface WardConfigObject {
@@ -384,7 +389,7 @@ export interface WardConfigObject {
     otherInsuaranceType: string;
     insuranceOtherSpecify: string;
     primaryDoctorPhoneNumber: string;
-    primaryDoctor:string
+    primaryDoctor: string;
     emmergencyDoctor: string;
     emmergencyDoctorPhoneNumber: string;
     admissionDateTime: string;
@@ -393,6 +398,7 @@ export interface WardConfigObject {
   diagnosisConceptSourceUud: string;
   inpatientAdmissionEncounterProviderRole: string;
   mortuaryAdmissionLoctionTagUuid: string;
+  dailyBedFeeBillableService: string;
 }
 
 export interface PendingItemsElementConfig {

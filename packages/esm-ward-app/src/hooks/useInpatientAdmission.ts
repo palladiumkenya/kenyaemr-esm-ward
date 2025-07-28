@@ -14,7 +14,7 @@ export function useInpatientAdmission(overrideLocation?: string) {
     'attributes,voided,encounters:(uuid,display,encounterDatetime,obs:(uuid,display,concept:(uuid,display),'+
     'obsDatetime,value),encounterType:(uuid,display))),patient:(uuid,identifiers:(uuid,display,identifier,identifierType)'+
     ',voided,person:(uuid,display,gender,age,birthdate,birthtime,preferredName,preferredAddress,dead,deathDate)),'+
-    'encounterAssigningToCurrentInpatientLocation:(encounterDatetime),'+
+    'encounterAssigningToCurrentInpatientLocation:(uuid,encounterDatetime),'+
     'currentInpatientRequest:(dispositionLocation,dispositionType,disposition:(uuid,display),'+
     'dispositionEncounter:(uuid,display),dispositionObsGroup:(uuid,display),visit:(uuid),patient:(uuid)),'+
     'firstAdmissionOrTransferEncounter:(encounterDatetime),currentInpatientLocation)'
