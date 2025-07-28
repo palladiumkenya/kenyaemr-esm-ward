@@ -10,12 +10,11 @@ import {
   useSession,
   type Visit,
 } from '@openmrs/esm-framework';
-import { useTranslation } from 'react-i18next';
-import { type WardPatient } from '../../types';
-import useSWR from 'swr';
 import { useCallback, useMemo } from 'react';
-import dayjs from 'dayjs';
-import { WardConfigObject } from '../../config-schema';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+import { type WardConfigObject } from '../../config-schema';
+import { type WardPatient } from '../../types';
 
 export function removePatientFromBed(bedId: number, patientUuid: string) {
   return openmrsFetch(`${restBaseUrl}/beds/${bedId}?patientUuid=${patientUuid}`, {
@@ -159,7 +158,10 @@ export const usePatientBills = (patientUuid: string, startingDate?: Date, endDat
     () => (data?.data?.results ?? []).filter((b) => b.patient.uuid === patientUuid),
     [data, patientUuid],
   );
-  const pendingBills = useMemo(() => bills.filter((bill) => bill.status === PaymentStatus.PENDING), [bills]);
+  const pendingBills = useMemo(
+    () => bills.filter((bill) => bill.lineItems.some((it) => it.paymentStatus === PaymentStatus.PENDING)),
+    [bills],
+  );
 
   const dailyBedFeeSettled = useCallback(
     (daysInWard?: number) => {
@@ -174,7 +176,6 @@ export const usePatientBills = (patientUuid: string, startingDate?: Date, endDat
     },
     [dailyBedFeeBillableService, bills],
   );
-
   return {
     error,
     isLoading,

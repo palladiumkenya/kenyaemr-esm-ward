@@ -264,11 +264,6 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '7e618d13-ffdb-4650-9a97-10ccd16ca36d',
   },
-  admissionEncounterTypeUuid: {
-    _description: 'Admission encounter type',
-    _type: Type.String,
-    _default: 'e22e39fd-7db2-45e7-80f1-60fa0d5a4378',
-  },
   transferRequestEncounterTypeUuid: {
     _description: 'Tranfer request encounter type',
     _type: Type.String,
@@ -283,11 +278,6 @@ export const configSchema: ConfigSchema = {
     _description: 'Referring to another facility concept uuid',
     _type: Type.String,
     _default: '164165AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-  },
-  dischargeHomeConceptUuid: {
-    _description: 'Discharge home concept uuid',
-    _type: Type.String,
-    _default: '1692AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   },
   inpatientDischargeFormUuid: {
     _description: 'IPD Discharge form uuid',
@@ -376,10 +366,8 @@ export interface WardConfigObject {
   ipdDischargeEncounterTypeUuid: string;
   inpatientDischargeFormUuid: string;
   transferRequestEncounterTypeUuid: string;
-  admissionEncounterTypeUuid: string;
   referralsConceptUuid: string;
   referringToAnotherFacilityConceptUuid: string;
-  dischargeHomeConceptUuid: string;
   insuaranceTypes: Array<{ label: string; concept: string }>;
   conceptUuidForWardAdmission: {
     paymentMethod: string;

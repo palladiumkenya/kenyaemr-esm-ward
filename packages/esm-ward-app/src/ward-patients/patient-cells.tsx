@@ -1,5 +1,12 @@
 import { InlineLoading, OverflowMenuItem, Tag } from '@carbon/react';
-import { ConfigurableLink, formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
+import {
+  ConfigurableLink,
+  formatDatetime,
+  parseDate,
+  useConfig,
+  useEmrConfiguration,
+  usePatient,
+} from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,15 +51,15 @@ type PatientAdmissionCellProps = CellProps & {
 
 export const PatientAdmissionDateCell: FC<PatientAdmissionCellProps> = ({ encounterUuid }) => {
   const { encounter, error, isLoading } = useEncounterDetails(encounterUuid);
-  const { admissionEncounterTypeUuid } = useConfig<WardConfigObject>();
+  const { emrConfiguration } = useEmrConfiguration();
 
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
-      (e) => e.encounterType.uuid === admissionEncounterTypeUuid,
+      (e) => e.encounterType.uuid === emrConfiguration?.exitFromInpatientEncounterType?.uuid,
     );
     if (!admisionEncounter || !admisionEncounter.encounterDatetime) return '--';
     return formatDatetime(parseDate(admisionEncounter.encounterDatetime));
-  }, [encounter, admissionEncounterTypeUuid]);
+  }, [encounter, emrConfiguration]);
   if (isLoading) return <InlineLoading />;
   if (error) return <p>--</p>;
 
@@ -61,10 +68,11 @@ export const PatientAdmissionDateCell: FC<PatientAdmissionCellProps> = ({ encoun
 
 export const PatientDayInWardCell: FC<PatientAdmissionCellProps> = ({ encounterUuid }) => {
   const { encounter, error, isLoading } = useEncounterDetails(encounterUuid);
-  const { admissionEncounterTypeUuid } = useConfig<WardConfigObject>();
+  const { emrConfiguration } = useEmrConfiguration();
+
   const daysInWard = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
-      (e) => e.encounterType.uuid === admissionEncounterTypeUuid,
+      (e) => e.encounterType.uuid === emrConfiguration?.exitFromInpatientEncounterType?.uuid,
     );
     if (!admisionEncounter || !admisionEncounter.encounterDatetime) return '--';
     const dischargeEncounter = encounter?.visit?.encounters?.find((e) => e.uuid === encounterUuid);
@@ -77,7 +85,7 @@ export const PatientDayInWardCell: FC<PatientAdmissionCellProps> = ({ encounterU
     const daysAdmitted =
       admissionDate.isValid() && dischargeDate.isValid() ? Math.abs(dischargeDate.diff(admissionDate, 'days')) : '--';
     return daysAdmitted;
-  }, [encounter, encounterUuid, admissionEncounterTypeUuid]);
+  }, [encounter, encounterUuid, emrConfiguration]);
   if (isLoading) return <InlineLoading />;
   if (error) return <p>--</p>;
 
@@ -111,7 +119,7 @@ export const PatientBillStatus: FC<PatientAdmissionCellProps> = ({ patientUuid, 
   if (isLoading || isLoadingBills) return <InlineLoading />;
   if (error || billsError) return <p>--</p>;
   if (bills.length === 0) return <Tag type="red">{t('billsNotRaised', 'Bills Not Raised')}</Tag>;
-  if (pendingBills.length > 0) return <Tag type="yellow">{t('pendingBills', 'Pending Bills')}</Tag>;
+  if (pendingBills.length > 0) return <Tag type="red">{t('pendingBills', 'Pending Bills')}</Tag>;
   if (!dailyBedFeeSettled(daysInWard))
     return <Tag type="red">{t('dailyBedFeeUnmatching', 'Daily bed fee and days in ward not matching')}</Tag>;
   return <Tag type="green">{t('billsSettled', 'Bills Settled')}</Tag>;
