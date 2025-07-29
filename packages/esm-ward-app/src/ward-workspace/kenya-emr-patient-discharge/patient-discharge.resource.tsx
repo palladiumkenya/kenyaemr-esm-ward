@@ -1,14 +1,19 @@
 import {
   type Encounter,
+  type FetchResponse,
   openmrsFetch,
   type OpenmrsResource,
   restBaseUrl,
   showSnackbar,
   useAppContext,
+  useConfig,
   useSession,
   type Visit,
 } from '@openmrs/esm-framework';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+import { type WardConfigObject } from '../../config-schema';
 import { type WardPatient } from '../../types';
 
 export function removePatientFromBed(bedId: number, patientUuid: string) {
@@ -120,4 +125,62 @@ export const usePatientDischarge = () => {
   };
 
   return { handleDischarge };
+};
+export enum PaymentStatus {
+  POSTED = 'POSTED',
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  CREDITED = 'CREDITED',
+  CANCELLED = 'CANCELLED',
+  ADJUSTED = 'ADJUSTED',
+  EXEMPTED = 'EXEMPTED',
+}
+type Bill = OpenmrsResource & {
+  voided: boolean;
+  voidReason?: string;
+  dateCreated: string;
+  patient: OpenmrsResource;
+  status: PaymentStatus;
+  lineItems: Array<{
+    paymentStatus: PaymentStatus;
+    billableService: string;
+    quantity: number;
+  }>;
+};
+export const usePatientBills = (patientUuid: string, startingDate?: Date, endDate?: Date) => {
+  const rep = 'custom:(uuid,display,voided,voidReason,dateCreated,patient:(uuid,display))';
+  const { dailyBedFeeBillableService } = useConfig<WardConfigObject>();
+  const startingDateISO = startingDate?.toISOString();
+  const endDateISO = endDate.toISOString();
+  const url = `${restBaseUrl}/cashier/bill?v=${rep}&patientUuid=${patientUuid}&createdOnOrAfter=${startingDateISO}&createdOnOrBefore=${endDateISO}`;
+  const { data, isLoading, error } = useSWR<FetchResponse<{ results: Array<Bill> }>>(startingDate ? url : null);
+  const bills = useMemo(
+    () => (data?.data?.results ?? []).filter((b) => b.patient.uuid === patientUuid),
+    [data, patientUuid],
+  );
+  const pendingBills = useMemo(
+    () => bills.filter((bill) => bill.lineItems.some((it) => it.paymentStatus === PaymentStatus.PENDING)),
+    [bills],
+  );
+
+  const dailyBedFeeSettled = useCallback(
+    (daysInWard?: number) => {
+      if (!daysInWard) return true;
+      const dailyBedFeesLineItems = bills.reduce<Bill['lineItems']>((prev, curr) => {
+        const b = (curr.lineItems ?? []).filter((item) => item.billableService === dailyBedFeeBillableService);
+        prev.push(...b);
+        return prev;
+      }, []);
+      const totalQuantity = dailyBedFeesLineItems.reduce((prev, curr) => prev + curr.quantity, 0);
+      return totalQuantity === daysInWard;
+    },
+    [dailyBedFeeBillableService, bills],
+  );
+  return {
+    error,
+    isLoading,
+    bills,
+    pendingBills,
+    dailyBedFeeSettled,
+  };
 };

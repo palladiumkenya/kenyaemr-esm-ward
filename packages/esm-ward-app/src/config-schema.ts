@@ -264,11 +264,6 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '7e618d13-ffdb-4650-9a97-10ccd16ca36d',
   },
-  admissionEncounterTypeUuid: {
-    _description: 'Admission encounter type',
-    _type: Type.String,
-    _default: 'e22e39fd-7db2-45e7-80f1-60fa0d5a4378',
-  },
   transferRequestEncounterTypeUuid: {
     _description: 'Tranfer request encounter type',
     _type: Type.String,
@@ -283,11 +278,6 @@ export const configSchema: ConfigSchema = {
     _description: 'Referring to another facility concept uuid',
     _type: Type.String,
     _default: '164165AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-  },
-  dischargeHomeConceptUuid: {
-    _description: 'Discharge home concept uuid',
-    _type: Type.String,
-    _default: '1692AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   },
   inpatientDischargeFormUuid: {
     _description: 'IPD Discharge form uuid',
@@ -355,6 +345,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '1dbbfe22-d21f-499c-bf33-cc9f75b6c7e8',
   },
+  dailyBedFeeBillableService: {
+    _description: 'Daily Bed Fee bILLABLE SERVICE uuid',
+    _type: Type.UUID,
+    _default: '37ce491f-b2dd-4433-b203-efebb8ba1469',
+  },
 };
 
 export interface WardConfigObject {
@@ -371,10 +366,8 @@ export interface WardConfigObject {
   ipdDischargeEncounterTypeUuid: string;
   inpatientDischargeFormUuid: string;
   transferRequestEncounterTypeUuid: string;
-  admissionEncounterTypeUuid: string;
   referralsConceptUuid: string;
   referringToAnotherFacilityConceptUuid: string;
-  dischargeHomeConceptUuid: string;
   insuaranceTypes: Array<{ label: string; concept: string }>;
   conceptUuidForWardAdmission: {
     paymentMethod: string;
@@ -384,7 +377,7 @@ export interface WardConfigObject {
     otherInsuaranceType: string;
     insuranceOtherSpecify: string;
     primaryDoctorPhoneNumber: string;
-    primaryDoctor:string
+    primaryDoctor: string;
     emmergencyDoctor: string;
     emmergencyDoctorPhoneNumber: string;
     admissionDateTime: string;
@@ -393,6 +386,7 @@ export interface WardConfigObject {
   diagnosisConceptSourceUud: string;
   inpatientAdmissionEncounterProviderRole: string;
   mortuaryAdmissionLoctionTagUuid: string;
+  dailyBedFeeBillableService: string;
 }
 
 export interface PendingItemsElementConfig {

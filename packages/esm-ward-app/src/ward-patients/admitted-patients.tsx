@@ -3,6 +3,7 @@ import {
   DataTableSkeleton,
   OverflowMenu,
   OverflowMenuItem,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -10,26 +11,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Pagination,
 } from '@carbon/react';
 import {
   formatDatetime,
   launchWorkspace,
-  type OpenmrsResource,
   parseDate,
   useAppContext,
   useConfig,
-  usePagination,
+  usePagination
 } from '@openmrs/esm-framework';
+import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { type WardConfigObject } from '../config-schema';
 import { type WardPatient, type WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
-import { EmptyState } from './table-state-components';
-import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { type WardConfigObject } from '../config-schema';
 import { HyperLinkPatientCell } from './patient-cells';
+import { EmptyState } from './table-state-components';
 const AdmittedPatients = () => {
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
