@@ -128,6 +128,10 @@ export const wardPatientWorkspaceBanner = getAsyncLifecycle(
   () => import('./ward-workspace/patient-banner/patient-banner.component'),
   options,
 );
+export const patientDischargeDocumentPreview = getAsyncLifecycle(
+  () => import('./discharge-printouts/discharge-printout.preview-modal'),
+  options,
+);
 
 export function startupApp() {
   registerBreadcrumbs([]);
