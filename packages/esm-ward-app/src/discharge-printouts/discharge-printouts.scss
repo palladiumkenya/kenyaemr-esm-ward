@@ -22,3 +22,100 @@
   width: 100%;
   margin-bottom: layout.$spacing-05;
 }
+
+.content {
+  padding: 6rem;
+  margin: 0 auto;
+  max-width: 800px;
+  // font-family: 'Courier New', Courier, monospace; // great for receipts
+  font-size: 14px;
+  line-height: 1.5;
+  color: #000;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: layout.$spacing-06;
+
+  // Print-specific tweaks
+  @media print {
+    padding: 0.5in;
+    font-size: 12px;
+    line-height: 1.4;
+    color-adjust: exact; // prevents color fading during print
+    -webkit-print-color-adjust: exact;
+  }
+
+  // Optional: section separators
+  & + .content {
+    margin-top: 2rem;
+    border-top: 1px dashed #ccc;
+    padding-top: 1rem;
+  }
+}
+
+.header {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  padding-top: layout.$spacing-05;
+  padding-bottom: layout.$spacing-05;
+  gap: layout.$spacing-03;
+  text-transform: uppercase;
+}
+
+.field {
+  display: flex;
+  align-items: baseline; // Ensures name and value share the same text baseline
+  gap: 0;
+  width: 100%;
+  flex-grow: 1;
+
+  > .name {
+    text-transform: uppercase;
+    margin-right: 8px; // Optional spacing tweak
+  }
+
+  > .value {
+    text-transform: uppercase;
+    border-bottom: 2px dotted black;
+    flex: 1;
+    line-height: 1.4; // tune if you need vertical spacing
+    display: inline-block;
+  }
+}
+
+@mixin gridByColumnCount($columns: 3, $gap: 1rem) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+
+  @media print {
+    padding: 0;
+    gap: 0.5rem;
+    border: none;
+    grid-template-columns: repeat($columns, 1fr);
+  }
+}
+
+.txtUpper {
+  text-transform: uppercase;
+}
+
+.cols4 {
+  @include gridByColumnCount(4);
+}
+
+.cols2 {
+  @include gridByColumnCount(2);
+}
+
+.cols3 {
+  @include gridByColumnCount(3);
+}
+
+.cols7 {
+  @include gridByColumnCount(7);
+}

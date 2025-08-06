@@ -1,37 +1,35 @@
 import {
+  DataTable,
   OverflowMenu,
   OverflowMenuItem,
-  DataTable,
-  TableContainer,
+  Pagination,
   Table,
-  TableHead,
-  TableRow,
-  TableHeader,
   TableBody,
   TableCell,
-  Pagination,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@carbon/react';
-import React, { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { EmptyState } from './table-state-components';
 import {
   type Encounter,
   formatDatetime,
-  launchWorkspace,
-  type OpenmrsResource,
   parseDate,
   useAppContext,
   useConfig,
   useEmrConfiguration,
   usePagination,
 } from '@openmrs/esm-framework';
+import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import dayjs from 'dayjs';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { type WardConfigObject } from '../config-schema';
 import { type WardPatient, type WardViewContext } from '../types';
 import { bedLayoutToBed, getOpenmrsId } from '../ward-view/ward-view.resource';
-import dayjs from 'dayjs';
-import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { type WardConfigObject } from '../config-schema';
-import { HyperLinkPatientCell, PatientBillStatus, UnAssignPatientBedAction } from './patient-cells';
 import { usePatientDischarge } from '../ward-workspace/kenya-emr-patient-discharge/patient-discharge.resource';
+import { HyperLinkPatientCell, PatientBillStatus, UnAssignPatientBedAction } from './patient-cells';
+import { EmptyState } from './table-state-components';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
@@ -130,15 +128,22 @@ const DischargeInPatients = () => {
             <UnAssignPatientBedAction
               patientUuid={patient.patient.uuid}
               encounterUuid={encounterAssigningToCurrentInpatientLocation?.uuid}
+              loading={wardPatientGroupDetails?.admissionLocationResponse?.isLoading}
               onClick={async () => {
-                await handleDischarge({} as Encounter, patient, emrConfiguration as Record<string, any>, patient.visit);
+                await handleDischarge(
+                  {} as Encounter,
+                  patient,
+                  emrConfiguration as Record<string, any>,
+                  patient.visit,
+                  wardPatientGroupDetails?.admissionLocationResponse?.admissionLocation?.ward,
+                );
               }}
             />
           </OverflowMenu>
         ),
       };
     });
-  }, [results, t, emrConfiguration, handleDischarge]);
+  }, [results, t, emrConfiguration, handleDischarge, wardPatientGroupDetails]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 

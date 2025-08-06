@@ -127,11 +127,13 @@ export const PatientBillStatus: FC<PatientAdmissionCellProps> = ({ patientUuid, 
 
 type UnAssignPatientBedActionProps = PatientAdmissionCellProps & {
   onClick?: () => void;
+  loading?: boolean;
 };
 export const UnAssignPatientBedAction: FC<UnAssignPatientBedActionProps> = ({
   encounterUuid,
   patientUuid,
   onClick,
+  loading,
 }) => {
   const { encounter, error, isLoading } = useEncounterDetails(encounterUuid);
   const { t } = useTranslation();
@@ -156,7 +158,7 @@ export const UnAssignPatientBedAction: FC<UnAssignPatientBedActionProps> = ({
     dailyBedFeeSettled,
   } = usePatientBills(patientUuid, startDate?.toDate(), endDateDate.toDate());
 
-  if (isLoading || isLoadingBills) return <InlineLoading />;
+  if (isLoading || isLoadingBills || loading) return <InlineLoading />;
   if (error || billsError) return null;
   if (bills.length === 0) return null;
   if (pendingBills.length > 0) return null;
