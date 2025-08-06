@@ -91,6 +91,7 @@
   display: grid;
   grid-template-columns: repeat($columns, 1fr);
   gap: $gap;
+  align-items: baseline;
 
   @media print {
     padding: 0;

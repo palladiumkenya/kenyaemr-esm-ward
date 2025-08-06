@@ -130,7 +130,7 @@ export const useIpdDischargeEncounter = () => {
 
 export const useEncounterDetails = (encounterUuid: string) => {
   const rep =
-    'custom:(uuid,display,encounterDatetime,visit:(uuid,display,encounters:(uuid,display,encounterType:(uuid,display),encounterDatetime)))';
+    'custom:(uuid,display,location:(display),encounterDatetime,visit:(uuid,display,encounters:(uuid,display,encounterType:(uuid,display),encounterDatetime)))';
   const url = `${restBaseUrl}/encounter/${encounterUuid}?v=${rep}`;
   const { data, error, isLoading } = useSWR<FetchResponse<Encounter>>(url, openmrsFetch);
   return {

@@ -72,7 +72,7 @@ const DischargePatients = () => {
                 const dispose = showModal('patient-discharge-document-preview-modal', {
                   size: 'lg',
                   onClose: () => dispose(),
-                  printout: <DischargeSummary />,
+                  printout: <DischargeSummary dischargeEncounterUuid={encounter.uuid} patient={encounter.patient} />,
                 });
               }}
             />
@@ -82,7 +82,7 @@ const DischargePatients = () => {
                 const dispose = showModal('patient-discharge-document-preview-modal', {
                   size: 'lg',
                   onClose: () => dispose(),
-                  printout: <GatePassPrintout />,
+                  printout: <GatePassPrintout dischargeEncounterUuid={encounter.uuid} patient={encounter.patient} />,
                 });
               }}
             />

@@ -1,11 +1,47 @@
-import React, { type FC } from 'react';
+import { InlineLoading, InlineNotification } from '@carbon/react';
+import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
+import React, { useMemo, type FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import styles from './discharge-printouts.scss';
 import FieldInput from './field-input';
-import { useTranslation } from 'react-i18next';
-import { useSession } from '@openmrs/esm-framework';
-const GatePassPrintout = () => {
+
+type GatePassPrintoutProps = {
+  dischargeEncounterUuid: string;
+  patient: {
+    uuid: string;
+    openmrsId: string;
+    name: string;
+  };
+};
+const DATE_FORMART = 'DD/MM/YYYY';
+const TIME_FORMART = 'hh:mm A';
+const GatePassPrintout: FC<GatePassPrintoutProps> = ({ dischargeEncounterUuid, patient: _patient }) => {
   const { t } = useTranslation();
+
+  const { encounter, error, isLoading } = useEncounterDetails(dischargeEncounterUuid);
+  const { isLoading: isLoadingPatient, patient, error: patientError } = usePatient(_patient.uuid);
   const session = useSession();
+  const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
+
+  const admissionDate = useMemo(() => {
+    const admisionEncounter = encounter?.visit?.encounters?.find(
+      (e) => e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
+    );
+    if (!admisionEncounter || !admisionEncounter.encounterDatetime) return null;
+    return admisionEncounter.encounterDatetime;
+  }, [encounter, emrConfiguration]);
+
+  if (isLoading || isLoadingPatient || isLoadingEmrConfiguration) return <InlineLoading />;
+  if (error || patientError || errorFetchingEmrConfiguration)
+    return (
+      <InlineNotification
+        kind="error"
+        title={error?.message ?? patientError?.message ?? errorFetchingEmrConfiguration?.message}
+      />
+    );
+
   return (
     <div className={styles.content}>
       <div className={styles.header}>
@@ -13,18 +49,24 @@ const GatePassPrintout = () => {
         <h5>{t('wardGatePass', 'Ward gate pass')}</h5>
       </div>
       <div className={styles.cols4}>
-        <FieldInput name={t('paperNo', 'Paper No')} value={'345re34'} />
-        <FieldInput name={t('patientNo', 'Patient No')} value={'1234edee4'} />
-        <FieldInput name={t('date', 'Date')} value={'11/07/2021'} />
-        <FieldInput name={t('time', 'Time')} />
+        <FieldInput name={t('paperNo', 'Paper No')} value={_patient.openmrsId} />
+        <FieldInput name={t('patientNo', 'Patient No')} value={_patient.openmrsId} />
+        <FieldInput name={t('date', 'Date')} value={dayjs().format(DATE_FORMART)} />
+        <FieldInput name={t('time', 'Time')} value={dayjs().format(TIME_FORMART)} />
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('patientNames', 'Patient names')} value={'Joyce Kamau'} />
-        <FieldInput name={t('age', 'Age')} value={'30 years'} />
+        <FieldInput name={t('patientNames', 'Patient names')} value={_patient.name} />
+        <FieldInput
+          name={t('age', 'Age')}
+          value={`${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} years`}
+        />
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('dateOfAdmissionAbrv', 'DOA')} value={'02/07/2021'} />
-        <FieldInput name={t('dateOfDischargeAbrv', 'DOD')} value={'02/07/2021'} />
+        <FieldInput name={t('dateOfAdmissionAbrv', 'DOA')} value={dayjs(admissionDate).format(DATE_FORMART)} />
+        <FieldInput
+          name={t('dateOfDischargeAbrv', 'DOD')}
+          value={dayjs(encounter.encounterDatetime).format(DATE_FORMART)}
+        />
       </div>
 
       <div>
@@ -51,6 +93,7 @@ const GatePassPrintout = () => {
       </div>
       <div className={styles.cols4}>
         <FieldInput name={t('healthRecordOfficer', 'Health Record Officer')} />
+        <FieldInput name="." delimiter="." />
         <FieldInput name={t('sign', 'Sign')} />
         <FieldInput name={t('date', 'Date')} />
       </div>

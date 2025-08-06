@@ -1,16 +1,8 @@
 import { InlineLoading, OverflowMenuItem, Tag } from '@carbon/react';
-import {
-  ConfigurableLink,
-  formatDatetime,
-  parseDate,
-  useConfig,
-  useEmrConfiguration,
-  usePatient,
-} from '@openmrs/esm-framework';
+import { ConfigurableLink, formatDatetime, parseDate, useEmrConfiguration, usePatient } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type WardConfigObject } from '../config-schema';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import { usePatientBills } from '../ward-workspace/kenya-emr-patient-discharge/patient-discharge.resource';
 
