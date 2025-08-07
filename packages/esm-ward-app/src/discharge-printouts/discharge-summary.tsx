@@ -4,8 +4,9 @@ import FieldInput from './field-input';
 import { useTranslation } from 'react-i18next';
 import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framework';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
-import { InlineLoading , InlineNotification } from '@carbon/react';
+import { InlineLoading, InlineNotification } from '@carbon/react';
 import dayjs from 'dayjs';
+import { usePatientDiagnosis } from './discharge-printout.resource';
 
 type DischargeSummaryProps = {
   dischargeEncounterUuid: string;
@@ -21,7 +22,11 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
   const { t } = useTranslation();
   const { encounter, error, isLoading } = useEncounterDetails(dischargeEncounterUuid);
   const { isLoading: isLoadingPatient, patient, error: patientError } = usePatient(_patient.uuid);
-
+  const {
+    isLoading: isLoadingDiagnosis,
+    diagnoses,
+    error: diagnosisError,
+  } = usePatientDiagnosis(dischargeEncounterUuid);
   const session = useSession();
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
 
@@ -33,12 +38,14 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     return admisionEncounter.encounterDatetime;
   }, [encounter, emrConfiguration]);
 
-  if (isLoading || isLoadingPatient || isLoadingEmrConfiguration) return <InlineLoading />;
-  if (error || patientError || errorFetchingEmrConfiguration)
+  if (isLoading || isLoadingPatient || isLoadingEmrConfiguration || isLoadingDiagnosis) return <InlineLoading />;
+  if (error || patientError || errorFetchingEmrConfiguration || diagnosisError)
     return (
       <InlineNotification
         kind="error"
-        title={error?.message ?? patientError?.message ?? errorFetchingEmrConfiguration?.message}
+        title={
+          error?.message ?? patientError?.message ?? errorFetchingEmrConfiguration?.message ?? diagnosisError?.message
+        }
       />
     );
   return (
@@ -64,51 +71,40 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
         />
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('nameOfConsultant', 'Name of consultant')} value={'Ann Waiguru'} />
+        <FieldInput name={t('nameOfConsultant', 'Name of consultant')} value={session.user.display} />
         <FieldInput name={t('department', 'Department')} value={encounter.location?.display} />
       </div>
 
       <div>
         <strong className={styles.txtUpper}>{t('diagnosis', 'Diagnosis')}</strong>
-        <p>Community aquired Pneumonia, Right Lowe Lob</p>
+        <p>{diagnoses?.length ? diagnoses.map((d) => d.text).join(', ') : t('noDiagnoses', 'No Diagnoses')}</p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('history', 'History')}</strong>
         <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias error repellat fugit iure aliquid dicta esse,
-          fugiat voluptates suscipit officiis, veniam, quidem repellendus harum aut hic deserunt natus magni libero?
+          {`${_patient.name}, a ${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} year ${
+            patient.gender
+          } presented with `}
         </p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('physicalExamination', 'Physical Examination')}</strong>
-        <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias error repellat fugit iure aliquid dicta esse,
-          fugiat voluptates suscipit officiis, veniam, quidem repellendus harum aut hic deserunt natus magni libero?
-        </p>
+        <p></p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('investigation', 'Investigation')}</strong>
-        <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias error repellat fugit iure aliquid dicta esse,
-          fugiat voluptates suscipit officiis, veniam, quidem repellendus harum aut hic deserunt natus magni libero?
-        </p>
+        <p></p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('treatment', 'Treatment')}</strong>
-        <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias error repellat fugit iure aliquid dicta esse,
-          fugiat voluptates suscipit officiis, veniam, quidem repellendus harum aut hic deserunt natus magni libero?
-        </p>
+        <p></p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('dischargeInstructions', 'Discharge Instructions')}</strong>
-        <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias error repellat fugit iure aliquid dicta esse,
-          fugiat voluptates suscipit officiis, veniam, quidem repellendus harum aut hic deserunt natus magni libero?
-        </p>
+        <p></p>
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('name', 'Name')} value={'Ann Waiguru'} />
+        <FieldInput name={t('name', 'Name')} value={session.user.display} />
         <FieldInput name={t('signature', 'Signature')} />
       </div>
       <div className={styles.cols2}>
