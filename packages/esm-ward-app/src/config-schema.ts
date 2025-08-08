@@ -355,6 +355,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.UUID,
     _default: '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3',
   },
+  clinicalConsultationEncounterType: {
+    _description: 'Clinical consultation encounter type Uuid',
+    _type: Type.UUID,
+    _default: '465a92f2-baf8-42e9-9612-53064be868e8',
+  },
 };
 
 export interface WardConfigObject {
@@ -393,6 +398,7 @@ export interface WardConfigObject {
   mortuaryAdmissionLoctionTagUuid: string;
   dailyBedFeeBillableService: string;
   drugOrderEncounterType: string;
+  clinicalConsultationEncounterType: string;
 }
 
 export interface PendingItemsElementConfig {

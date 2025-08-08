@@ -1,18 +1,13 @@
+import { InlineLoading, InlineNotification } from '@carbon/react';
+import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
 import React, { type FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
+import { useProvider } from '../ward-workspace/admit-patient-form-workspace/patient-admission.resources';
+import { DATE_FORMART, usePatientDiagnosis, usePatientOrders } from './discharge-printout.resource';
 import styles from './discharge-printouts.scss';
 import FieldInput from './field-input';
-import { useTranslation } from 'react-i18next';
-import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framework';
-import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
-import { InlineLoading, InlineNotification } from '@carbon/react';
-import dayjs from 'dayjs';
-import {
-  DATE_FORMART,
-  usePatientAllergies,
-  usePatientDiagnosis,
-  usePatientOrders,
-} from './discharge-printout.resource';
-import { useProvider } from '../ward-workspace/admit-patient-form-workspace/patient-admission.resources';
 
 type DischargeSummaryProps = {
   dischargeEncounterUuid: string;
@@ -32,11 +27,6 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     error: diagnosisError,
     display: diagnoses,
   } = usePatientDiagnosis(dischargeEncounterUuid);
-  const {
-    display: allergies,
-    error: allergiesError,
-    isLoading: isLoadingAllergies,
-  } = usePatientAllergies(_patient.uuid);
   const session = useSession();
   const { error: errorProvider, isLoading: isLoadingProvider, provider } = useProvider(session.currentProvider.uuid);
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
@@ -45,6 +35,8 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     error: orderserror,
     drugOrders,
     testOrders,
+    complaints,
+    drugReactions,
   } = usePatientOrders(dischargeEncounterUuid);
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
@@ -60,19 +52,10 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     isLoadingEmrConfiguration ||
     isLoadingDiagnosis ||
     isLoadingProvider ||
-    isLoadingAllergies ||
     isLoadingOders
   )
     return <InlineLoading />;
-  if (
-    error ||
-    patientError ||
-    errorFetchingEmrConfiguration ||
-    diagnosisError ||
-    errorProvider ||
-    allergiesError ||
-    orderserror
-  )
+  if (error || patientError || errorFetchingEmrConfiguration || diagnosisError || errorProvider || orderserror)
     return (
       <InlineNotification
         kind="error"
@@ -82,7 +65,6 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
           errorFetchingEmrConfiguration?.message ??
           diagnosisError?.message ??
           errorProvider?.message ??
-          allergiesError?.message ??
           orderserror?.message
         }
       />
@@ -121,12 +103,12 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
       <div>
         <strong className={styles.txtUpper}>{t('history', 'History')}</strong>
         <p>
-          {`${_patient.name}, a ${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} year ${
-            patient.gender
-          } presented with .${
-            allergies
-              ? t('knownAlergies', 'Known Alergies') + ': ' + allergies
-              : t('noKnownAlergies', 'No known alergies')
+          {`${_patient.name}, a ${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} year ${patient.gender} ${
+            complaints ? 'presented with ' + complaints : ''
+          } .${
+            drugReactions
+              ? t('knownDrugAllergies', 'Known drug allergies') + ': ' + drugReactions
+              : t('noKnownDrugAllergies', 'No known allergies')
           }`}
         </p>
       </div>
