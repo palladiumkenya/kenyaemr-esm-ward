@@ -27,7 +27,6 @@
   padding: 6rem;
   margin: 0 auto;
   max-width: 800px;
-  // font-family: 'Courier New', Courier, monospace; // great for receipts
   font-size: 14px;
   line-height: 1.5;
   color: #000;
@@ -68,21 +67,21 @@
 
 .field {
   display: flex;
-  align-items: baseline; // Ensures name and value share the same text baseline
+  align-items: baseline;
   gap: 0;
   width: 100%;
   flex-grow: 1;
 
   > .name {
     text-transform: uppercase;
-    margin-right: 8px; // Optional spacing tweak
+    margin-right: 8px;
   }
 
   > .value {
     text-transform: uppercase;
     border-bottom: 2px dotted black;
     flex: 1;
-    line-height: 1.4; // tune if you need vertical spacing
+    line-height: 1.4;
     display: inline-block;
   }
 }
@@ -103,6 +102,10 @@
 
 .txtUpper {
   text-transform: uppercase;
+}
+
+.txtTitle {
+  text-transform: capitalize;
 }
 
 .cols4 {

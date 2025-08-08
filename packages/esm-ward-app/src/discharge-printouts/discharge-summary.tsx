@@ -6,7 +6,8 @@ import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framew
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import { InlineLoading, InlineNotification } from '@carbon/react';
 import dayjs from 'dayjs';
-import { usePatientDiagnosis } from './discharge-printout.resource';
+import { usePatientAllergies, usePatientDiagnosis, usePatientOrders } from './discharge-printout.resource';
+import { useProvider } from '../ward-workspace/admit-patient-form-workspace/patient-admission.resources';
 
 type DischargeSummaryProps = {
   dischargeEncounterUuid: string;
@@ -24,12 +25,23 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
   const { isLoading: isLoadingPatient, patient, error: patientError } = usePatient(_patient.uuid);
   const {
     isLoading: isLoadingDiagnosis,
-    diagnoses,
     error: diagnosisError,
+    display: diagnoses,
   } = usePatientDiagnosis(dischargeEncounterUuid);
+  const {
+    display: allergies,
+    error: allergiesError,
+    isLoading: isLoadingAllergies,
+  } = usePatientAllergies(_patient.uuid);
   const session = useSession();
+  const { error: errorProvider, isLoading: isLoadingProvider, provider } = useProvider(session.currentProvider.uuid);
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
-
+  const {
+    isLoading: isLoadingOders,
+    error: orderserror,
+    drugOrders,
+    testOrders,
+  } = usePatientOrders(dischargeEncounterUuid);
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
       (e) => e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
@@ -38,13 +50,36 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     return admisionEncounter.encounterDatetime;
   }, [encounter, emrConfiguration]);
 
-  if (isLoading || isLoadingPatient || isLoadingEmrConfiguration || isLoadingDiagnosis) return <InlineLoading />;
-  if (error || patientError || errorFetchingEmrConfiguration || diagnosisError)
+  if (
+    isLoading ||
+    isLoadingPatient ||
+    isLoadingEmrConfiguration ||
+    isLoadingDiagnosis ||
+    isLoadingProvider ||
+    isLoadingAllergies ||
+    isLoadingOders
+  )
+    return <InlineLoading />;
+  if (
+    error ||
+    patientError ||
+    errorFetchingEmrConfiguration ||
+    diagnosisError ||
+    errorProvider ||
+    allergiesError ||
+    orderserror
+  )
     return (
       <InlineNotification
         kind="error"
         title={
-          error?.message ?? patientError?.message ?? errorFetchingEmrConfiguration?.message ?? diagnosisError?.message
+          error?.message ??
+          patientError?.message ??
+          errorFetchingEmrConfiguration?.message ??
+          diagnosisError?.message ??
+          errorProvider?.message ??
+          allergiesError?.message ??
+          orderserror?.message
         }
       />
     );
@@ -71,20 +106,24 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
         />
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('nameOfConsultant', 'Name of consultant')} value={session.user.display} />
+        <FieldInput name={t('nameOfConsultant', 'Name of consultant')} value={provider?.display?.split('-')?.at(-1)} />
         <FieldInput name={t('department', 'Department')} value={encounter.location?.display} />
       </div>
 
       <div>
         <strong className={styles.txtUpper}>{t('diagnosis', 'Diagnosis')}</strong>
-        <p>{diagnoses?.length ? diagnoses.map((d) => d.text).join(', ') : t('noDiagnoses', 'No Diagnoses')}</p>
+        <p className={styles.txtTitle}>{diagnoses?.toLowerCase() ?? t('noDiagnoses', 'No Diagnoses')}</p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('history', 'History')}</strong>
         <p>
           {`${_patient.name}, a ${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} year ${
             patient.gender
-          } presented with `}
+          } presented with .${
+            allergies
+              ? t('knownAlergies', 'Known Alergies') + ': ' + allergies
+              : t('noKnownAlergies', 'No known alergies')
+          }`}
         </p>
       </div>
       <div>
@@ -93,23 +132,33 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('investigation', 'Investigation')}</strong>
-        <p></p>
+        <p>
+          {testOrders.map((order) => (
+            <p key={order.uuid} className={styles.txtTitle}>
+              {order.display?.toLowerCase()}
+            </p>
+          ))}
+        </p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('treatment', 'Treatment')}</strong>
-        <p></p>
+        <div>
+          {drugOrders.map((order) => (
+            <p key={order.uuid}>{order.display}</p>
+          ))}
+        </div>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('dischargeInstructions', 'Discharge Instructions')}</strong>
         <p></p>
       </div>
       <div className={styles.cols2}>
-        <FieldInput name={t('name', 'Name')} value={session.user.display} />
+        <FieldInput name={t('name', 'Name')} value={provider?.display?.split('-')?.at(-1)} />
         <FieldInput name={t('signature', 'Signature')} />
       </div>
       <div className={styles.cols2}>
         <FieldInput name={t('destination', 'Destination')} value={t('discharge', 'Discharge')} />
-        <FieldInput name={t('date', 'Date')} value="12/06/2024" />
+        <FieldInput name={t('date', 'Date')} value={dayjs().format(DATE_FORMART)} />
       </div>
     </div>
   );

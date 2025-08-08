@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import styles from './discharge-printouts.scss';
 import FieldInput from './field-input';
+import { DATE_FORMART, TIME_FORMART } from './discharge-printout.resource';
 
 type GatePassPrintoutProps = {
   dischargeEncounterUuid: string;
@@ -15,8 +16,7 @@ type GatePassPrintoutProps = {
     name: string;
   };
 };
-const DATE_FORMART = 'DD/MM/YYYY';
-const TIME_FORMART = 'hh:mm A';
+
 const GatePassPrintout: FC<GatePassPrintoutProps> = ({ dischargeEncounterUuid, patient: _patient }) => {
   const { t } = useTranslation();
 
@@ -74,9 +74,9 @@ const GatePassPrintout: FC<GatePassPrintoutProps> = ({ dischargeEncounterUuid, p
         <br />
         <div className={styles.cols7}>
           <span>{t('cashCheckBox', 'Cash [ ]')}</span>
-          <span>{t('chequeCheckBox', 'Chequeu [ ]')}</span>
+          <span>{t('chequCheckBox', 'Cheque [ ]')}</span>
           <span>{t('shaCheckBox', 'SHA [ ]')}</span>
-          <span>{t('scheme', 'Sheme [ ]')}</span>
+          <span>{t('scheme', 'Scheme [ ]')}</span>
           <span>{t('mrm', 'M.R.M [ ]')}</span>
           <FieldInput name={t('other', 'Other')} />
           <FieldInput name="." delimiter="." />
