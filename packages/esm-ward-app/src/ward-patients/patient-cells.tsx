@@ -1,16 +1,8 @@
 import { InlineLoading, OverflowMenuItem, Tag } from '@carbon/react';
-import {
-  ConfigurableLink,
-  formatDatetime,
-  parseDate,
-  useConfig,
-  useEmrConfiguration,
-  usePatient,
-} from '@openmrs/esm-framework';
+import { ConfigurableLink, formatDatetime, parseDate, useEmrConfiguration, usePatient } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type WardConfigObject } from '../config-schema';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import { usePatientBills } from '../ward-workspace/kenya-emr-patient-discharge/patient-discharge.resource';
 
@@ -127,11 +119,13 @@ export const PatientBillStatus: FC<PatientAdmissionCellProps> = ({ patientUuid, 
 
 type UnAssignPatientBedActionProps = PatientAdmissionCellProps & {
   onClick?: () => void;
+  loading?: boolean;
 };
 export const UnAssignPatientBedAction: FC<UnAssignPatientBedActionProps> = ({
   encounterUuid,
   patientUuid,
   onClick,
+  loading,
 }) => {
   const { encounter, error, isLoading } = useEncounterDetails(encounterUuid);
   const { t } = useTranslation();
@@ -156,7 +150,7 @@ export const UnAssignPatientBedAction: FC<UnAssignPatientBedActionProps> = ({
     dailyBedFeeSettled,
   } = usePatientBills(patientUuid, startDate?.toDate(), endDateDate.toDate());
 
-  if (isLoading || isLoadingBills) return <InlineLoading />;
+  if (isLoading || isLoadingBills || loading) return <InlineLoading />;
   if (error || billsError) return null;
   if (bills.length === 0) return null;
   if (pendingBills.length > 0) return null;

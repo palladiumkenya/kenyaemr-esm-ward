@@ -94,10 +94,12 @@ export const useIpdDischargeEncounter = () => {
   const { isLoadingLocation, location, errorFetchingLocation } = useWardLocation();
   const pageSizes = [10, 20, 50, 100];
   const [currPageSize, setCurrPageSize] = useState(10);
-  const urls =
-    !location || emrConfiguration
-      ? null
-      : `${fhirBaseUrl}/Encounter?_summary=data&type=${emrConfiguration?.exitFromInpatientEncounterType}&location=${location?.uuid}`;
+
+  const urls = useMemo(() => {
+    if (!location || !emrConfiguration?.exitFromInpatientEncounterType?.uuid) return null;
+    else
+      return `${fhirBaseUrl}/Encounter?_summary=data&type=${emrConfiguration?.exitFromInpatientEncounterType?.uuid}&location=${location?.uuid}`;
+  }, [location, emrConfiguration]);
   const { data, isLoading, error, paginated, currentPage, goTo, totalCount, currentPageSize } =
     useFhirPagination<Entry>(urls, currPageSize);
   const encounters = useMemo(() => {
@@ -126,10 +128,10 @@ export const useIpdDischargeEncounter = () => {
   };
 };
 
-export const useEncounterDetails = (encounterUuid: string) => {
-  const rep =
-    'custom:(uuid,display,encounterDatetime,visit:(uuid,display,encounters:(uuid,display,encounterType:(uuid,display),encounterDatetime)))';
-  const url = `${restBaseUrl}/encounter/${encounterUuid}?v=${rep}`;
+export const useEncounterDetails = (encounterUuid: string, rep?: string) => {
+  const _rep =
+    'custom:(uuid,display,location:(display),encounterDatetime,visit:(uuid,display,encounters:(uuid,display,encounterType:(uuid,display),encounterDatetime)))';
+  const url = `${restBaseUrl}/encounter/${encounterUuid}?v=${rep ?? _rep}`;
   const { data, error, isLoading } = useSWR<FetchResponse<Encounter>>(url, openmrsFetch);
   return {
     isLoading,

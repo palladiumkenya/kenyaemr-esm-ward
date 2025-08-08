@@ -86,6 +86,10 @@
       "slot": "maternal-ward"
     },
     {
+      "component": "patientDischargeDocumentPreview",
+      "name": "patient-discharge-document-preview-modal"
+    },
+    {
       "component": "wardPatientWorkspaceBanner",
       "name": "ward-patient-workspace-banner",
       "slot": "ward-workspace-patient-banner-slot"

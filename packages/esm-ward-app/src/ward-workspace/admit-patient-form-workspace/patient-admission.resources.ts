@@ -1,8 +1,16 @@
-import { type Concept, restBaseUrl, useConfig, useDebounce, useOpenmrsFetchAll } from '@openmrs/esm-framework';
+import {
+  type Concept,
+  type FetchResponse,
+  restBaseUrl,
+  useConfig,
+  useDebounce,
+  useOpenmrsFetchAll,
+} from '@openmrs/esm-framework';
 import { useMemo, useState } from 'react';
 import z from 'zod';
 import { type WardConfigObject } from '../../config-schema';
 import dayjs from 'dayjs';
+import useSWR from 'swr';
 export const useDiagnoses = () => {
   const { diagnosisConceptSourceUud } = useConfig<WardConfigObject>();
   const [q, setQ] = useState('');
@@ -48,6 +56,16 @@ export const useProviders = () => {
   const { data, error, isLoading } = useOpenmrsFetchAll<Provider>(url);
   return {
     providers: data ?? [],
+    error,
+    isLoading,
+  };
+};
+
+export const useProvider = (uuid: string) => {
+  const url = `${restBaseUrl}/provider/${uuid}?v=custom:(uuid,display)`;
+  const { data, error, isLoading } = useSWR<FetchResponse<Provider>>(url);
+  return {
+    provider: data?.data,
     error,
     isLoading,
   };

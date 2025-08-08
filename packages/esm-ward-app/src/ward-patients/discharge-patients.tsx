@@ -16,7 +16,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, ErrorState } from './table-state-components';
 import { useIpdDischargeEncounter } from '../hooks/useIpdDischargeEncounter';
-import { formatDatetime, parseDate } from '@openmrs/esm-framework';
+import { formatDatetime, parseDate, showModal } from '@openmrs/esm-framework';
 import {
   HyperLinkPatientCell,
   PatientAdmissionDateCell,
@@ -24,6 +24,8 @@ import {
   PatientDayInWardCell,
   PatientGenderCell,
 } from './patient-cells';
+import DischargeSummary from '../discharge-printouts/discharge-summary';
+import GatePassPrintout from '../discharge-printouts/gate-pass-printout';
 
 const DischargePatients = () => {
   const { t } = useTranslation();
@@ -64,8 +66,26 @@ const DischargePatients = () => {
         daysAdmitted: <PatientDayInWardCell patientUuid={encounter.patient.uuid} encounterUuid={encounter.uuid} />,
         action: (
           <OverflowMenu size={'sm'} flipped>
-            <OverflowMenuItem itemText={t('dischargeSummary', 'Discharge Summary')} onClick={() => {}} />
-            <OverflowMenuItem itemText={t('gatePass', 'Gate Pass')} onClick={() => {}} />
+            <OverflowMenuItem
+              itemText={t('dischargeSummary', 'Discharge Summary')}
+              onClick={() => {
+                const dispose = showModal('patient-discharge-document-preview-modal', {
+                  size: 'lg',
+                  onClose: () => dispose(),
+                  printout: <DischargeSummary dischargeEncounterUuid={encounter.uuid} patient={encounter.patient} />,
+                });
+              }}
+            />
+            <OverflowMenuItem
+              itemText={t('gatePass', 'Gate Pass')}
+              onClick={() => {
+                const dispose = showModal('patient-discharge-document-preview-modal', {
+                  size: 'lg',
+                  onClose: () => dispose(),
+                  printout: <GatePassPrintout dischargeEncounterUuid={encounter.uuid} patient={encounter.patient} />,
+                });
+              }}
+            />
           </OverflowMenu>
         ),
       };

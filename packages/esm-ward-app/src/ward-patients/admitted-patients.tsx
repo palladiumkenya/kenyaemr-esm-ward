@@ -18,7 +18,7 @@ import {
   parseDate,
   useAppContext,
   useConfig,
-  usePagination
+  usePagination,
 } from '@openmrs/esm-framework';
 import { usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import dayjs from 'dayjs';
@@ -109,7 +109,7 @@ const AdmittedPatients = () => {
         action: (
           <OverflowMenu size={'sm'} flipped>
             <OverflowMenuItem
-              itemText={t('tranfer', 'Tranfer')}
+              itemText={t('interWardTransfer', 'Interward Trasfer')}
               onClick={() =>
                 launchWorkspace('patient-transfer-swap-workspace', {
                   workspaceTitle: 'Trasfer',

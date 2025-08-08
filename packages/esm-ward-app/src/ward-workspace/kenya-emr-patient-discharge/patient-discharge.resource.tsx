@@ -85,12 +85,13 @@ export const usePatientDischarge = () => {
     wardPatient: WardPatient,
     emrConfiguration: Record<string, unknown>,
     visit: Visit,
+    wardLocation?: OpenmrsResource,
   ) => {
     try {
       const encounterPayload = createDischargeEncounterPayload(
         wardPatient.patient.uuid,
         emrConfiguration.exitFromInpatientEncounterType as OpenmrsResource,
-        session?.sessionLocation as OpenmrsResource,
+        wardLocation ?? (session?.sessionLocation as OpenmrsResource),
         session?.currentProvider as OpenmrsResource,
         visit.uuid,
         emrConfiguration.clinicianEncounterRole as OpenmrsResource,
