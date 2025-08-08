@@ -8,6 +8,7 @@ import { useProvider } from '../ward-workspace/admit-patient-form-workspace/pati
 import { DATE_FORMART, usePatientDiagnosis, usePatientOrders } from './discharge-printout.resource';
 import styles from './discharge-printouts.scss';
 import FieldInput from './field-input';
+import LabResults from './lab-results';
 
 type DischargeSummaryProps = {
   dischargeEncounterUuid: string;
@@ -37,6 +38,7 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     testOrders,
     complaints,
     drugReactions,
+    orderEncounters,
   } = usePatientOrders(dischargeEncounterUuid);
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
@@ -98,7 +100,7 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
 
       <div>
         <strong className={styles.txtUpper}>{t('diagnosis', 'Diagnosis')}</strong>
-        <p className={styles.txtTitle}>{diagnoses?.toLowerCase() ?? t('noDiagnoses', 'No Diagnoses')}</p>
+        <p className={styles.txtTitle}>{diagnoses ?? t('noDiagnoses', 'No Diagnoses')}</p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('history', 'History')}</strong>
@@ -120,9 +122,11 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
         <strong className={styles.txtUpper}>{t('investigation', 'Investigation')}</strong>
         <p>
           {testOrders.map((order) => (
-            <p key={order.uuid} className={styles.txtTitle}>
-              {order.display?.toLowerCase()}
-            </p>
+            <LabResults
+              order={order}
+              key={order.uuid}
+              labEncounter={orderEncounters.find((e) => e.uuid === order.encounter.uuid) as any}
+            />
           ))}
         </p>
       </div>

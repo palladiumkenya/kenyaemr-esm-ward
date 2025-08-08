@@ -3,6 +3,7 @@ import {
   type FetchResponse,
   type Obs,
   openmrsFetch,
+  type OpenmrsResource,
   restBaseUrl,
   useConfig,
   type Visit,
@@ -14,6 +15,10 @@ import { type WardConfigObject } from '../config-schema';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 export const DATE_FORMART = 'DD/MM/YYYY';
 export const TIME_FORMART = 'hh:mm A';
+
+const labConceptRepresentation =
+  'custom:(uuid,display,name,datatype,set,answers,hiNormal,hiAbsolute,hiCritical,lowNormal,lowAbsolute,lowCritical,units,allowDecimal,' +
+  'setMembers:(uuid,display,answers,datatype,hiNormal,hiAbsolute,hiCritical,lowNormal,lowAbsolute,lowCritical,units,allowDecimal,set,setMembers:(uuid)))';
 
 export const usePatientDiagnosis = (encounterUuid: string) => {
   const customRepresentation =
@@ -35,7 +40,11 @@ export const usePatientDiagnosis = (encounterUuid: string) => {
     );
   }, [data]);
   const display = useMemo(() => {
-    if (diagnoses?.length) return diagnoses.map((d) => d.text).join(', ');
+    if (diagnoses?.length)
+      return diagnoses
+        .map((d) => d.text)
+        .join(', ')
+        ?.toLowerCase();
     return null;
   }, [diagnoses]);
 
@@ -136,3 +145,133 @@ function getDrugReactions(clinialConsultationEncounters: Array<Encounter>) {
     return prev;
   }, []);
 }
+type NullableNumber = number | null | undefined;
+export type ObservationValue =
+  | OpenmrsResource // coded
+  | number // numeric
+  | string // text or misc
+  | null;
+
+export interface LabOrderConcept {
+  uuid: string;
+  display: string;
+  name?: ConceptName;
+  datatype: Datatype;
+  set: boolean;
+  version: string;
+  retired: boolean;
+  descriptions: Array<Description>;
+  mappings?: Array<Mapping>;
+  answers?: Array<OpenmrsResource>;
+  setMembers?: Array<LabOrderConcept>;
+  hiNormal?: NullableNumber;
+  hiAbsolute?: NullableNumber;
+  hiCritical?: NullableNumber;
+  lowNormal?: NullableNumber;
+  lowAbsolute?: NullableNumber;
+  lowCritical?: NullableNumber;
+  allowDecimal?: boolean | null;
+  units?: string;
+}
+
+export interface ConceptName {
+  display: string;
+  uuid: string;
+  name: string;
+  locale: string;
+  localePreferred: boolean;
+  conceptNameType: string;
+}
+
+export interface Datatype {
+  uuid: string;
+  display: string;
+  name: string;
+  description: string;
+  hl7Abbreviation: string;
+  retired: boolean;
+  resourceVersion: string;
+}
+
+export interface Description {
+  display: string;
+  uuid: string;
+  description: string;
+  locale: string;
+  resourceVersion: string;
+}
+
+export interface Mapping {
+  display: string;
+  uuid: string;
+  conceptReferenceTerm: OpenmrsResource;
+  conceptMapType: OpenmrsResource;
+  resourceVersion: string;
+}
+export function useOrderConceptByUuid(uuid: string) {
+  const apiUrl = `${restBaseUrl}/concept/${uuid}?v=${labConceptRepresentation}`;
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<LabOrderConcept, Error>(uuid, fetchAllSetMembers);
+  /**
+   * We are fetching 2 levels of set members at one go.
+   */
+
+  const results = useMemo(
+    () => ({
+      concept: data,
+      isLoading,
+      error,
+      isValidating,
+      mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate],
+  );
+
+  return results;
+}
+
+/**
+ * This function fetches all the different levels of set members for a concept,
+ * while fetching 2 levels of set members at one go.
+ * @param conceptUuid - The UUID of the concept to fetch.
+ * @returns The concept with all its set members and their set members.
+ */
+async function fetchAllSetMembers(conceptUuid: string): Promise<LabOrderConcept> {
+  const conceptResponse = await openmrsFetch<LabOrderConcept>(getUrlForConcept(conceptUuid));
+  let concept = conceptResponse.data;
+  const secondLevelSetMembers = concept.set
+    ? concept.setMembers
+        .map((member) => (member.set ? member.setMembers.map((lowerMember) => lowerMember.uuid) : []))
+        .flat()
+    : [];
+  if (secondLevelSetMembers.length > 0) {
+    const concepts = await Promise.all(secondLevelSetMembers.map((uuid) => fetchAllSetMembers(uuid)));
+    const uuidMap = concepts.reduce(
+      (acc, c) => {
+        acc[c.uuid] = c;
+        return acc;
+      },
+      {} as Record<string, LabOrderConcept>,
+    );
+    concept.setMembers = concept.setMembers.map((member) => {
+      if (member.set) {
+        member.setMembers = member.setMembers.map((lowerMember) => uuidMap[lowerMember.uuid]);
+      }
+      return member;
+    });
+  }
+
+  return concept;
+}
+
+function getUrlForConcept(conceptUuid: string) {
+  return `${restBaseUrl}/concept/${conceptUuid}?v=${labConceptRepresentation}`;
+}
+
+export const getObservationDisplayValue = (value: ObservationValue): string => {
+  if (!value) return '--';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value.toString();
+  if (value && typeof value === 'object' && 'display' in value) return value.display;
+  return '--';
+};
