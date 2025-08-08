@@ -6,7 +6,12 @@ import { useEmrConfiguration, usePatient, useSession } from '@openmrs/esm-framew
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import { InlineLoading, InlineNotification } from '@carbon/react';
 import dayjs from 'dayjs';
-import { usePatientAllergies, usePatientDiagnosis, usePatientOrders } from './discharge-printout.resource';
+import {
+  DATE_FORMART,
+  usePatientAllergies,
+  usePatientDiagnosis,
+  usePatientOrders,
+} from './discharge-printout.resource';
 import { useProvider } from '../ward-workspace/admit-patient-form-workspace/patient-admission.resources';
 
 type DischargeSummaryProps = {
@@ -17,7 +22,6 @@ type DischargeSummaryProps = {
     name: string;
   };
 };
-const DATE_FORMART = 'DD/MM/YYYY';
 
 const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, patient: _patient }) => {
   const { t } = useTranslation();
