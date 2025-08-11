@@ -60,19 +60,35 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
   const rep =
     'custom:(uuid,display,location:(display),encounterDatetime,visit:(uuid,display,encounters:(uuid,display,encounterType:(uuid,display),encounterDatetime,orders,obs)))';
   const { encounter, error, isLoading } = useEncounterDetails(dischargeEncounterUuId, rep);
-  const { drugOrderEncounterType, clinicalConsultationEncounterType } = useConfig<WardConfigObject>();
+  const {
+    drugOrderEncounterType,
+    clinicalConsultationEncounterType,
+    ipdDischargeEncounterTypeUuid,
+    doctorsNoteEncounterType,
+    conceptUuidForWardAdmission: concepts,
+  } = useConfig<WardConfigObject>();
+
   const orderEncounters = useMemo(() => {
     const encounters = (encounter?.visit?.encounters ?? []).filter(
       (enc) => enc.encounterType.uuid === drugOrderEncounterType,
     );
     return encounters;
   }, [encounter, drugOrderEncounterType]);
+
   const clinicalConsultationEncounters = useMemo(() => {
     const encounters = (encounter?.visit?.encounters ?? []).filter(
       (enc) => enc.encounterType.uuid === clinicalConsultationEncounterType,
     );
     return encounters;
   }, [encounter, clinicalConsultationEncounterType]);
+
+  const doctorsNoteEncounters = useMemo(() => {
+    const encounters = (encounter?.visit?.encounters ?? []).filter(
+      (enc) => enc.encounterType.uuid === doctorsNoteEncounterType,
+    );
+    return encounters;
+  }, [encounter, doctorsNoteEncounterType]);
+
   const { drugorder, testorder } = useMemo<{ drugorder: Array<Order>; testorder: Array<Order> }>(
     () =>
       orderEncounters.reduce(
@@ -87,20 +103,48 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
       ),
     [orderEncounters],
   );
+
   const complaints = useMemo(() => {
-    const obs = getComplaintsObs(clinicalConsultationEncounters);
+    const obs = getComplaintsObs(doctorsNoteEncounters, concepts.complaint, concepts.chiefComplaint);
     if (obs.length) return obs.map((o) => `${(o.value as any)?.display ?? o.value}`).join(', ');
     return null;
-  }, [clinicalConsultationEncounters]);
+  }, [doctorsNoteEncounters, concepts]);
+
   const drugReactions = useMemo(() => {
-    const obs = getDrugReactions(clinicalConsultationEncounters);
+    const obs = getDrugReactions(clinicalConsultationEncounters, concepts.drugReaction, concepts.reactingDrug);
     if (obs.length)
       return obs
         .map((o) => `${(o.value as any)?.display ?? o.value}`)
         .join(', ')
         .toLowerCase();
     return null;
-  }, [clinicalConsultationEncounters]);
+  }, [clinicalConsultationEncounters, concepts]);
+
+  const ipdDischargeEncounter = useMemo<Encounter>(() => {
+    const encounters = (encounter?.visit?.encounters ?? []).find(
+      (enc) => enc.encounterType.uuid === ipdDischargeEncounterTypeUuid,
+    );
+    return encounters;
+  }, [encounter, ipdDischargeEncounterTypeUuid]);
+
+  const physicalExaminations = useMemo(() => {
+    const obs = doctorsNoteEncounters.reduce<Array<Obs>>((prev, cur) => {
+      if (cur.obs?.length) {
+        const obs = cur.obs.filter((o) => o.concept.uuid === concepts.physicalExamination);
+        prev.push(...obs);
+      }
+      return prev;
+    }, []);
+    return obs?.map((ob) => ((ob.value as any)?.display ?? ob.value)?.toLowerCase());
+  }, [doctorsNoteEncounters, concepts.physicalExamination]);
+
+  const dischargeinstructions = useMemo(() => {
+    const instructionObsValue = ipdDischargeEncounter?.obs?.find(
+      (o) => o.concept.uuid === concepts.dischargeInstruction,
+    )?.value;
+    return (instructionObsValue as any)?.display ?? instructionObsValue;
+  }, [ipdDischargeEncounter, concepts.dischargeInstruction]);
+
   return {
     isLoading,
     error,
@@ -110,15 +154,18 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
     clinicalConsultationEncounters,
     complaints,
     drugReactions,
+    dischargeinstructions,
+    ipdDischargeEncounter,
+    physicalExaminations,
   };
 }
 
-function getComplaintsObs(clinialConsultationEncounters: Array<Encounter>) {
-  // TODO Add concepts to config
-  const complaintsConceptUuid = '160531AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  const chiefComplainConceptUuid = '5219AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-
-  return clinialConsultationEncounters.reduce<Array<Obs>>((prev, curr) => {
+function getComplaintsObs(
+  encounters: Array<Encounter>,
+  complaintsConceptUuid: string,
+  chiefComplainConceptUuid: string,
+) {
+  return encounters.reduce<Array<Obs>>((prev, curr) => {
     if (curr.obs.length) {
       const complaintObs = curr.obs
         .filter((o) => o.concept.uuid === complaintsConceptUuid && o.groupMembers)
@@ -130,11 +177,8 @@ function getComplaintsObs(clinialConsultationEncounters: Array<Encounter>) {
   }, []);
 }
 
-function getDrugReactions(clinialConsultationEncounters: Array<Encounter>) {
-  // TODO: aDD CONCEPTS TO CONFIG
-  const drugReactionsConceptUuid = '162747AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  const drugConceptUuid = '1193AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  return clinialConsultationEncounters.reduce<Array<Obs>>((prev, curr) => {
+function getDrugReactions(encounters: Array<Encounter>, drugReactionsConceptUuid: string, drugConceptUuid: string) {
+  return encounters.reduce<Array<Obs>>((prev, curr) => {
     if (curr.obs.length) {
       const complaintObs = curr.obs
         .filter((o) => o.concept.uuid === drugReactionsConceptUuid && o.groupMembers)
@@ -274,4 +318,8 @@ export const getObservationDisplayValue = (value: ObservationValue): string => {
   if (typeof value === 'number') return value.toString();
   if (value && typeof value === 'object' && 'display' in value) return value.display;
   return '--';
+};
+
+export const getTreatmentDisplayText = (order: Order): string => {
+  return `${order.drug?.display} ${order.frequency.display} for ${order.duration} ${order.durationUnits.display}`;
 };

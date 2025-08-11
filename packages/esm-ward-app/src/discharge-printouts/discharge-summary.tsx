@@ -5,7 +5,12 @@ import React, { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEncounterDetails } from '../hooks/useIpdDischargeEncounter';
 import { useProvider } from '../ward-workspace/admit-patient-form-workspace/patient-admission.resources';
-import { DATE_FORMART, usePatientDiagnosis, usePatientOrders } from './discharge-printout.resource';
+import {
+  DATE_FORMART,
+  getTreatmentDisplayText,
+  usePatientDiagnosis,
+  usePatientOrders,
+} from './discharge-printout.resource';
 import styles from './discharge-printouts.scss';
 import FieldInput from './field-input';
 import LabResults from './lab-results';
@@ -39,6 +44,8 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
     complaints,
     drugReactions,
     orderEncounters,
+    dischargeinstructions,
+    physicalExaminations,
   } = usePatientOrders(dischargeEncounterUuid);
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
@@ -105,18 +112,24 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
       <div>
         <strong className={styles.txtUpper}>{t('history', 'History')}</strong>
         <p>
-          {`${_patient.name}, a ${Math.abs(dayjs(patient.birthDate).diff(dayjs(), 'years'))} year ${patient.gender} ${
-            complaints ? 'presented with ' + complaints : ''
-          } .${
+          {`${complaints ? 'Presented with ' + complaints + '.' : ''}${
             drugReactions
               ? t('knownDrugAllergies', 'Known drug allergies') + ': ' + drugReactions
-              : t('noKnownDrugAllergies', 'No known allergies')
+              : t('noKnownDrugAllergies', 'No known drug allergies')
           }`}
         </p>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('physicalExamination', 'Physical Examination')}</strong>
-        <p></p>
+        {physicalExaminations?.length ? (
+          physicalExaminations?.map((examination, i) => (
+            <p key={i} className={styles.txtTitle}>
+              {examination}
+            </p>
+          ))
+        ) : (
+          <p>{t('noExaminations', 'No Examinations')}</p>
+        )}
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('investigation', 'Investigation')}</strong>
@@ -134,13 +147,13 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
         <strong className={styles.txtUpper}>{t('treatment', 'Treatment')}</strong>
         <div>
           {drugOrders.map((order) => (
-            <p key={order.uuid}>{order.display}</p>
+            <p key={order.uuid}>{getTreatmentDisplayText(order)}</p>
           ))}
         </div>
       </div>
       <div>
         <strong className={styles.txtUpper}>{t('dischargeInstructions', 'Discharge Instructions')}</strong>
-        <p></p>
+        <p>{dischargeinstructions ?? t('noInstructions', 'No instructions')}</p>
       </div>
       <div className={styles.cols2}>
         <FieldInput name={t('name', 'Name')} value={provider?.display?.split('-')?.at(-1)} />

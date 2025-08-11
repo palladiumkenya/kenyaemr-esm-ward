@@ -82,15 +82,14 @@ const LabResults: FC<LabResultsProps> = ({ order, labEncounter: encounter }) => 
     );
 
   return (
-    <p key={order.uuid} className={styles.txtTitle}>
+    <div key={order.uuid} className={styles.txtTitle}>
       {testResults.map((res) => (
-        <React.Fragment key={res.id}>
+        <p key={res.id}>
           <strong>{res.testType.toLowerCase()}: </strong>
           <span>{res.result}</span>
-          {res.result !== EMPTY_TEXT && <span>({res.normalRange})</span>}
-        </React.Fragment>
+        </p>
       ))}
-    </p>
+    </div>
   );
 };
 

@@ -300,6 +300,11 @@ export const configSchema: ConfigSchema = {
       emmergencyDoctorPhoneNumber: '163152AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       admissionDateTime: '1640AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       chiefComplaint: '5219AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      complaint: '160531AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      physicalExamination: '162737AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      dischargeInstruction: '160632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      drugReaction: '162747AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      reactingDrug: '1193AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
   },
   diagnosisConceptSourceUud: {
@@ -360,6 +365,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.UUID,
     _default: '465a92f2-baf8-42e9-9612-53064be868e8',
   },
+  doctorsNoteEncounterType: {
+    _description: 'Doctors note encounter type Uuid',
+    _type: Type.UUID,
+    _default: '14b36860-5033-4765-b91b-ace856ab64c2',
+  },
 };
 
 export interface WardConfigObject {
@@ -392,6 +402,11 @@ export interface WardConfigObject {
     emmergencyDoctorPhoneNumber: string;
     admissionDateTime: string;
     chiefComplaint: string;
+    physicalExamination: string;
+    dischargeInstruction: string;
+    complaint: string;
+    drugReaction: string;
+    reactingDrug: string;
   };
   diagnosisConceptSourceUud: string;
   inpatientAdmissionEncounterProviderRole: string;
@@ -399,6 +414,7 @@ export interface WardConfigObject {
   dailyBedFeeBillableService: string;
   drugOrderEncounterType: string;
   clinicalConsultationEncounterType: string;
+  doctorsNoteEncounterType: string;
 }
 
 export interface PendingItemsElementConfig {
