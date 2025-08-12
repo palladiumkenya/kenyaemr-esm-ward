@@ -35,7 +35,6 @@ const DischargeInPatients = () => {
   const { t } = useTranslation();
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
-  //TODO remove (added for demo purposes)
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
   const { handleDischarge } = usePatientDischarge();
 
@@ -128,7 +127,7 @@ const DischargeInPatients = () => {
             <UnAssignPatientBedAction
               patientUuid={patient.patient.uuid}
               encounterUuid={encounterAssigningToCurrentInpatientLocation?.uuid}
-              loading={wardPatientGroupDetails?.admissionLocationResponse?.isLoading}
+              loading={wardPatientGroupDetails?.admissionLocationResponse?.isLoading || isLoadingEmrConfiguration}
               onClick={async () => {
                 await handleDischarge(
                   {} as Encounter,
@@ -143,7 +142,7 @@ const DischargeInPatients = () => {
         ),
       };
     });
-  }, [results, t, emrConfiguration, handleDischarge, wardPatientGroupDetails]);
+  }, [results, t, emrConfiguration, handleDischarge, wardPatientGroupDetails, isLoadingEmrConfiguration]);
 
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 
