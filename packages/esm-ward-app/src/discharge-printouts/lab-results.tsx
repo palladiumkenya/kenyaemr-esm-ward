@@ -1,8 +1,8 @@
 import { InlineLoading, InlineNotification } from '@carbon/react';
+import { type Encounter } from '@openmrs/esm-framework';
 import type { Order } from '@openmrs/esm-patient-common-lib';
 import React, { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Encounter } from '../types';
 import { getObservationDisplayValue, useOrderConceptByUuid } from './discharge-printout.resource';
 import styles from './discharge-printouts.scss';
 type LabResultsProps = {

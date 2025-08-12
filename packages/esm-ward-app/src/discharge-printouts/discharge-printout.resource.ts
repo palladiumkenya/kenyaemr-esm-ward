@@ -106,7 +106,7 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
 
   const complaints = useMemo(() => {
     const obs = getComplaintsObs(doctorsNoteEncounters, concepts.complaint, concepts.chiefComplaint);
-    if (obs.length) return obs.map((o) => `${(o.value as any)?.display ?? o.value}`).join(', ');
+    if (obs.length) return obs.map((o) => getObservationDisplayValue(o.value, null)).join(', ');
     return null;
   }, [doctorsNoteEncounters, concepts]);
 
@@ -114,7 +114,7 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
     const obs = getDrugReactions(clinicalConsultationEncounters, concepts.drugReaction, concepts.reactingDrug);
     if (obs.length)
       return obs
-        .map((o) => `${(o.value as any)?.display ?? o.value}`)
+        .map((o) => getObservationDisplayValue(o.value, null))
         .join(', ')
         .toLowerCase();
     return null;
@@ -135,14 +135,14 @@ export function usePatientOrders(dischargeEncounterUuId: string) {
       }
       return prev;
     }, []);
-    return obs?.map((ob) => ((ob.value as any)?.display ?? ob.value)?.toLowerCase());
+    return obs?.map((ob) => getObservationDisplayValue(ob.value, null)?.toLowerCase());
   }, [doctorsNoteEncounters, concepts.physicalExamination]);
 
   const dischargeinstructions = useMemo(() => {
     const instructionObsValue = ipdDischargeEncounter?.obs?.find(
       (o) => o.concept.uuid === concepts.dischargeInstruction,
     )?.value;
-    return (instructionObsValue as any)?.display ?? instructionObsValue;
+    return getObservationDisplayValue(instructionObsValue, null);
   }, [ipdDischargeEncounter, concepts.dischargeInstruction]);
 
   return {
@@ -194,18 +194,19 @@ export type ObservationValue =
   | OpenmrsResource // coded
   | number // numeric
   | string // text or misc
+  | boolean
   | null;
 
 export interface LabOrderConcept {
   uuid: string;
   display: string;
   name?: ConceptName;
-  datatype: Datatype;
+  datatype: LabOrderConceptDatatype;
   set: boolean;
   version: string;
   retired: boolean;
-  descriptions: Array<Description>;
-  mappings?: Array<Mapping>;
+  descriptions: Array<LabOrderConceptDescription>;
+  mappings?: Array<LabOrderConceptMapping>;
   answers?: Array<OpenmrsResource>;
   setMembers?: Array<LabOrderConcept>;
   hiNormal?: NullableNumber;
@@ -227,7 +228,7 @@ export interface ConceptName {
   conceptNameType: string;
 }
 
-export interface Datatype {
+export interface LabOrderConceptDatatype {
   uuid: string;
   display: string;
   name: string;
@@ -237,7 +238,7 @@ export interface Datatype {
   resourceVersion: string;
 }
 
-export interface Description {
+export interface LabOrderConceptDescription {
   display: string;
   uuid: string;
   description: string;
@@ -245,7 +246,7 @@ export interface Description {
   resourceVersion: string;
 }
 
-export interface Mapping {
+export interface LabOrderConceptMapping {
   display: string;
   uuid: string;
   conceptReferenceTerm: OpenmrsResource;
@@ -312,14 +313,23 @@ function getUrlForConcept(conceptUuid: string) {
   return `${restBaseUrl}/concept/${conceptUuid}?v=${labConceptRepresentation}`;
 }
 
-export const getObservationDisplayValue = (value: ObservationValue): string => {
-  if (!value) return '--';
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return value.toString();
-  if (value && typeof value === 'object' && 'display' in value) return value.display;
-  return '--';
-};
+export const getObservationDisplayValue = (value: ObservationValue, defaultValue: string | null = '--'): string => {
+  if (value == null) return defaultValue;
 
+  switch (typeof value) {
+    case 'string':
+      return value.trim() || defaultValue;
+    case 'number':
+      return String(value);
+    case 'object':
+      if ('display' in value && typeof value.display === 'string') {
+        return value.display.trim() || defaultValue;
+      }
+      break;
+  }
+
+  return defaultValue;
+};
 export const getTreatmentDisplayText = (order: Order): string => {
   return `${order.drug?.display} ${order.frequency.display} for ${order.duration} ${order.durationUnits.display}`;
 };

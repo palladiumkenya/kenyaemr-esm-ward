@@ -138,7 +138,7 @@ const DischargeSummary: FC<DischargeSummaryProps> = ({ dischargeEncounterUuid, p
             <LabResults
               order={order}
               key={order.uuid}
-              labEncounter={orderEncounters.find((e) => e.uuid === order.encounter.uuid) as any}
+              labEncounter={orderEncounters.find((e) => e.uuid === order.encounter.uuid)}
             />
           ))}
         </p>
