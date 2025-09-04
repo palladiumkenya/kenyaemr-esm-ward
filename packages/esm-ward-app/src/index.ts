@@ -18,7 +18,10 @@ const options = {
 
 export const root = getAsyncLifecycle(() => import('./root.component'), options);
 
-export const wardDashboardLink = getSyncLifecycle(createDashboardLink({ name: 'ward', title: 'wards' }), options);
+export const wardDashboardLink = getSyncLifecycle(
+  createDashboardLink({ name: 'ward', title: 'Admissions', icon: 'omrs-icon-hospital-bed' }),
+  options,
+);
 
 export const wardView = getAsyncLifecycle(() => import('./ward-view/ward-view.component'), options);
 
