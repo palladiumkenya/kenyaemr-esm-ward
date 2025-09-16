@@ -6,7 +6,7 @@ import { useIpdDischargeEncounter } from './useIpdDischargeEncounter';
 import { useWardPatientGrouping } from './useWardPatientGrouping';
 
 export const useWardsSummaryMetrics = () => {
-  const rep = 'custom:(uuid,display,tags:(uuid,display),totalBeds,occupiedBeds,bedLayouts:(patients:(uuid,display)))';
+  const rep = 'custom:(tags:(uuid,display),totalBeds,occupiedBeds,bedLayouts:(patients:(uuid,display)))';
 
   const apiUrl = `${restBaseUrl}/admissionLocation?v=${rep}`;
   const { data = [], isLoading, error } = useOpenmrsFetchAll<AdmissionLocationFetchResponse>(apiUrl);
