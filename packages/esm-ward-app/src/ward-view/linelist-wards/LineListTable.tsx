@@ -71,13 +71,13 @@ const LineListTable = () => {
 
       return {
         id: location.ward.uuid,
-        ward: location.ward.display,
-        numberOfBeds: location.totalBeds,
-        occupiedBeds: (
+        ward: (
           <ConfigurableLink to={url} className={styles.link} templateParams={{ locationUuid: location.ward.uuid }}>
-            {location.occupiedBeds}
+            {location.ward.display}
           </ConfigurableLink>
         ),
+        numberOfBeds: location.totalBeds,
+        occupiedBeds: location.occupiedBeds,
         freebeds: location.totalBeds - location.occupiedBeds,
         bedOccupancy: calculateOccupancy(location),
         pendingOut: <WardPendingOutCell locationUuid={location.ward.uuid} />,
