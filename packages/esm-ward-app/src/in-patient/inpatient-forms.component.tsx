@@ -10,7 +10,6 @@ import {
 } from '@openmrs/esm-framework';
 import { launchStartVisitPrompt } from '@openmrs/esm-patient-common-lib';
 import dayjs from 'dayjs';
-import styles from './inpatient.scss';
 import { type WardConfigObject } from '../config-schema';
 type InpatientFormsProps = {
   patientUuid: string;
@@ -64,13 +63,11 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient, emrConf
     return null;
   }
   return (
-    <div className={styles.inpatientFormsContainer}>
-      <ComboButton size="sm" label={t('inPatientForms', 'In-Patient Forms')}>
-        {filteredForms.map((form) => (
-          <MenuItem key={form.uuid} onClick={() => handleLaunchForm(form)} label={form.label} />
-        ))}
-      </ComboButton>
-    </div>
+    <ComboButton size="sm" label={t('inPatientForms', 'In-Patient Forms')}>
+      {filteredForms.map((form) => (
+        <MenuItem key={form.uuid} onClick={() => handleLaunchForm(form)} label={form.label} />
+      ))}
+    </ComboButton>
   );
 };
 
