@@ -8,6 +8,8 @@ import {
 import { configSchema } from './config-schema';
 import { moduleName } from './constant';
 import { createDashboardLink } from './createDashboardLink.component';
+import { inPatientMeta } from './in-patient/in-patient.meta';
+import InPatient from './in-patient/in-patient.component';
 
 export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
@@ -135,6 +137,13 @@ export const patientDischargeDocumentPreview = getAsyncLifecycle(
   () => import('./discharge-printouts/discharge-printout.preview-modal'),
   options,
 );
+
+export const inPatientChartLink = getSyncLifecycle(
+  createDashboardLink({ ...inPatientMeta, icon: 'omrs-icon-activity' }),
+  options,
+);
+
+export const inPatientChartDashboard = getSyncLifecycle(InPatient, options);
 
 export function startupApp() {
   registerBreadcrumbs([]);

@@ -284,6 +284,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '98a781d2-b777-4756-b4c9-c9b0deb3483c',
   },
+  admissionRequestFormUuid: {
+    _description: 'Admission request form uuid',
+    _type: Type.String,
+    _default: '0bae7646-b079-4cbb-8130-b24274fc16f7',
+  },
   conceptUuidForWardAdmission: {
     _description: 'Concept UUID for ward admission',
     _type: Type.Object,
@@ -370,6 +375,54 @@ export const configSchema: ConfigSchema = {
     _type: Type.UUID,
     _default: '14b36860-5033-4765-b91b-ace856ab64c2',
   },
+  inPatientForms: {
+    _type: Type.Array,
+    _description: 'List of forms that can be filled out for in-patients',
+    _default: [
+      {
+        label: 'Cardex Nursing Plan',
+        uuid: '1f81d5e2-3569-40cf-bbb9-361a53ba409b',
+      },
+      {
+        label: 'IPD Procedure Form',
+        uuid: '2b9c2b94-0b03-416a-b312-eef49b42f72c',
+      },
+      {
+        label: 'Newborn Unit Admission ',
+        uuid: '5b0a08f5-87c1-40cc-8c09-09c33b44523d',
+        hideExpression: 'ageInDays < 28',
+      },
+      {
+        label: 'Partograph Form',
+        uuid: '3791e5b7-2cdc-44fc-982b-a81135367c96',
+        hideExpression: 'age >= 10 && gender === "female"',
+      },
+      {
+        uuid: '87379b0a-738b-4799-9736-cdac614cee2a',
+        label: 'Doctors Note',
+      },
+      {
+        uuid: '43dacebf-2412-44b6-b55a-63aff5b02fcd',
+        label: 'Post Delivery',
+      },
+      {
+        uuid: 'ac043326-c5f0-4d11-9e6f-f7266b3f3859',
+        label: 'Post Operation',
+      },
+      {
+        uuid: 'a14824ca-29af-4d37-b9da-6bdee39f8808',
+        label: 'Pre-Operation Checklist',
+      },
+      {
+        uuid: 'b4bfa7a3-f6ed-4339-a4ec-b076463c0696',
+        label: 'Fluid Intake',
+      },
+      {
+        uuid: 'cd65f1dd-0047-4449-9c38-0710a7214c52',
+        label: 'Initial Nursing Cardex',
+      },
+    ],
+  },
 };
 
 export interface WardConfigObject {
@@ -415,6 +468,8 @@ export interface WardConfigObject {
   drugOrderEncounterType: string;
   clinicalConsultationEncounterType: string;
   doctorsNoteEncounterType: string;
+  admissionRequestFormUuid: string;
+  inPatientForms: Array<{ label: string; uuid: string; hideExpression: string }>;
 }
 
 export interface PendingItemsElementConfig {
