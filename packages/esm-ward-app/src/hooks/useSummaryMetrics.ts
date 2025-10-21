@@ -34,7 +34,7 @@ export const useWardsSummaryMetrics = () => {
   }, [filteredData]);
 
   const bedOccupancy = useMemo(() => {
-    if (!totalBeds || !occupiedBeds) return `0%`;
+    if (!totalBeds) return `0%`;
     return `${((occupiedBeds / totalBeds) * 100).toFixed(2)}%`;
   }, [totalBeds, occupiedBeds]);
 

@@ -61,7 +61,7 @@ const AdmitPatientFormWorkspace: React.FC<WardPatientWorkspaceProps> = ({
   const { data: bedsAssignedToPatient, isLoading: isLoadingBedsAssignedToPatient } = useAssignedBedByPatient(
     patient.uuid,
   );
-  const beds = isLoading ? [] : wardPatientGroupDetails?.bedLayouts ?? [];
+  const beds = isLoading ? [] : (wardPatientGroupDetails?.bedLayouts ?? []);
 
   const {
     control,
@@ -88,7 +88,7 @@ const AdmitPatientFormWorkspace: React.FC<WardPatientWorkspaceProps> = ({
     setIsSubmitting(true);
     const bedSelected = beds.find((bed) => bed.bedId === values.bedId);
     const obs = formValuesToObs(values, config);
-    admitPatient(patient, dispositionType, visit.uuid, obs)
+    admitPatient(patient, dispositionType, visit.uuid, obs, values.admissionDate)
       .then(
         async (response) => {
           if (response.ok) {
@@ -103,12 +103,21 @@ const AdmitPatientFormWorkspace: React.FC<WardPatientWorkspaceProps> = ({
             }
           }
         },
-        (err: Error) => {
-          showSnackbar({
-            kind: 'error',
-            title: t('errorCreatingEncounter', 'Failed to admit patient'),
-            subtitle: err.message,
-          });
+        (err: any) => {
+          if (err?.responseBody?.error?.fieldErrors?.encounterDatetime?.length) {
+            showSnackbar({
+              kind: 'error',
+              title: t('errorCreatingEncounter', 'Failed to admit patient'),
+              subtitle: err?.responseBody?.error?.fieldErrors?.encounterDatetime
+                ?.map((e: any) => e.message)
+                ?.join(', '),
+            });
+          } else
+            showSnackbar({
+              kind: 'error',
+              title: t('errorCreatingEncounter', 'Failed to admit patient'),
+              subtitle: err.message,
+            });
         },
       )
       .then(

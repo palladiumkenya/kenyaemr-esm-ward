@@ -13,6 +13,7 @@ export function useCreateEncounter() {
     encounterType: OpenmrsResource,
     visitUuid: string,
     obs: ObsPayload[] = [],
+    dateOfAdmission?: Date,
   ) => {
     const encounterPayload = {
       patient: patient.uuid,
@@ -26,6 +27,7 @@ export function useCreateEncounter() {
       ],
       obs,
       visit: visitUuid,
+      encounterDatetime: dateOfAdmission?.toISOString() ?? undefined,
     };
 
     return openmrsFetch<Encounter>(`${restBaseUrl}/encounter`, {
@@ -44,14 +46,20 @@ export function useAdmitPatient() {
   const { createEncounter, emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } =
     useCreateEncounter();
 
-  const admitPatient = (patient: Patient, dispositionType: DispositionType, visitUuid: string, obs?: ObsPayload[]) => {
+  const admitPatient = (
+    patient: Patient,
+    dispositionType: DispositionType,
+    visitUuid: string,
+    obs?: ObsPayload[],
+    dateOfAdmission?: Date,
+  ) => {
     const encounterType =
       dispositionType === 'ADMIT'
         ? emrConfiguration.admissionEncounterType
         : dispositionType === 'TRANSFER'
           ? emrConfiguration.transferWithinHospitalEncounterType
           : null;
-    return createEncounter(patient, encounterType, visitUuid, obs);
+    return createEncounter(patient, encounterType, visitUuid, obs, dateOfAdmission);
   };
 
   return { admitPatient, isLoadingEmrConfiguration, errorFetchingEmrConfiguration };

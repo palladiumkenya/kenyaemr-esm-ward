@@ -61,8 +61,8 @@ const LineListTable = () => {
   ];
 
   const calculateOccupancy = (location: AdmissionLocationFetchResponse) => {
-    if (!location.totalBeds || !location.occupiedBeds) return 0;
-    return (((location.totalBeds - location.occupiedBeds) / location.totalBeds) * 100).toFixed(2);
+    if (!location.totalBeds) return 0;
+    return (((location?.occupiedBeds ?? 0) / location.totalBeds) * 100).toFixed(2);
   };
 
   const tableRows = useMemo(() => {
