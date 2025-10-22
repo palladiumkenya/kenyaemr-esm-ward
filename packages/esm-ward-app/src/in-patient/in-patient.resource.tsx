@@ -8,7 +8,7 @@ export const usePatientEncounters = (patientUuid: string) => {
   const { data, isLoading, error, mutate } = useSWR<{
     data: { results: Array<Encounter> };
   }>(
-    `/ws/rest/v1/encounter?patient=${patientUuid}&v=custom:(uuid,display,encounterDatetime,obs:full,form:(uuid,display),encounterType:(uuid,display),encounterProviders:(uuid,display,encounterRole:(uuid,display),provider:(uuid,person:(uuid,display))),orders:(uuid,display),diagnoses:(uuid,display)`,
+    `${restBaseUrl}/encounter?patient=${patientUuid}&v=custom:(uuid,display,encounterDatetime,obs:full,form:(uuid,display),encounterType:(uuid,display),encounterProviders:(uuid,display,encounterRole:(uuid,display),provider:(uuid,person:(uuid,display))),orders:(uuid,display),diagnoses:(uuid,display)`,
     openmrsFetch,
   );
 

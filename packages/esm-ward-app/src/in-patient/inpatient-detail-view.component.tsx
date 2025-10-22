@@ -102,15 +102,15 @@ const PatientAdmitted: FC<{
       </CardHeader>
       <div className={styles.detailsContainer}>
         <Tile>
-          <strong>Date of Admission</strong>
+          <strong>{t('dateOfAdmission', 'Date of Admission')}</strong>
           <p>{formatDatetime(dateOfAdmission)}</p>
         </Tile>
         <Tile>
-          <strong>Days in ward</strong>
+          <strong>{t('daysInWard', 'Days in ward')}</strong>
           <p>{dayasInWard}</p>
         </Tile>
         <Tile>
-          <strong>Ward</strong>
+          <strong>{t('ward', 'Ward')}</strong>
           <p>{ward?.display}</p>
         </Tile>
         <Tile>
@@ -118,7 +118,7 @@ const PatientAdmitted: FC<{
             <InlineLoading />
           ) : (
             <>
-              <strong>Bed</strong>
+              <strong>{t('bed', 'Bed')}</strong>
               <p>{bedLayout?.bedNumber}</p>
             </>
           )}
