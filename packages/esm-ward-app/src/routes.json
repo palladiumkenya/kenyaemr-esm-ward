@@ -93,6 +93,26 @@
       "component": "wardPatientWorkspaceBanner",
       "name": "ward-patient-workspace-banner",
       "slot": "ward-workspace-patient-banner-slot"
+    },
+     {
+      "name": "in-patient-dashboard-link",
+      "component": "inPatientChartLink",
+      "order": 7,
+      "meta": {
+        "slot": "patient-chart-in-patient-dashboard-slot",
+        "path": "in-patient",
+        "layoutMode": "anchored",
+        "columns": 1,
+        "columnSpan": 1
+      }
+    },
+    {
+      "name": "in-patient-dashboard",
+      "slot": "patient-chart-in-patient-dashboard-slot",
+      "component": "inPatientChartDashboard",
+      "meta": {
+        "fullWidth": false
+      }
     }
   ],
   "workspaces": [
