@@ -1,5 +1,5 @@
-@use '@carbon/styles/scss/spacing';
-@use '@carbon/styles/scss/type';
+@use '@carbon/layout';
+@use '@carbon/type';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
 .tableContainer {
@@ -16,18 +16,18 @@
   }
 
   &:global(.cds--data-table-container) {
-    background: none !important;
+    background: none;
   }
 }
 
 .expandedRow {
-  padding-inline-start: 3.5rem;
+  padding-inline-start: layout.$spacing-05;
 
   > td {
-    padding: inherit !important;
+    padding: inherit;
 
     > div {
-      max-height: max-content !important;
+      max-height: max-content;
     }
   }
 
