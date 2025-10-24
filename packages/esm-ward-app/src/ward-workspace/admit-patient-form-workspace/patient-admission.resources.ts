@@ -22,8 +22,8 @@ export const useDiagnoses = () => {
   const diagnoses = useMemo(
     () =>
       (data ?? [])
-        .filter(
-          (c) => c.mappings?.some((m) => m?.conceptReferenceTerm?.conceptSource?.uuid === diagnosisConceptSourceUud),
+        .filter((c) =>
+          c.mappings?.some((m) => m?.conceptReferenceTerm?.conceptSource?.uuid === diagnosisConceptSourceUud),
         )
         .map((c) => {
           const code = c.mappings?.find(
@@ -91,10 +91,6 @@ const formartDate = (date: Date) => {
 export type InapatientAdmissionFormData = z.infer<typeof inpatientAdmissionSchema>;
 export const formValuesToObs = (data: InapatientAdmissionFormData, config: WardConfigObject) => {
   const obs = [
-    {
-      concept: config.conceptUuidForWardAdmission.admissionDateTime,
-      value: formartDate(data?.admissionDate),
-    },
     {
       concept: config.conceptUuidForWardAdmission.primaryDoctor,
       value: data.primaryDoctor,
