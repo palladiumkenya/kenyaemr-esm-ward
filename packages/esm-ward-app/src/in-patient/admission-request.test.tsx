@@ -1,12 +1,11 @@
-import React from 'react';
+import { formatDatetime, isDesktop, launchWorkspace, type Person, useLayoutType } from '@openmrs/esm-framework';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { launchWorkspace, formatDatetime, useLayoutType, isDesktop } from '@openmrs/esm-framework';
+import React from 'react';
 
 import AdmissionRequest from './admission-request.component';
 import { useAdmissionRequest } from './in-patient.resource';
-import { type AdmissionRequest as AdmissionRequestType } from '../types';
-
+import { type InpatientRequest } from '../types';
 const mockUseAdmissionRequest = useAdmissionRequest as jest.MockedFunction<typeof useAdmissionRequest>;
 const mockLaunchWorkspace = launchWorkspace as jest.MockedFunction<typeof launchWorkspace>;
 const mockFormatDatetime = formatDatetime as jest.MockedFunction<typeof formatDatetime>;
@@ -20,10 +19,9 @@ jest.mock('./in-patient.resource', () => ({
 jest.mock('@openmrs/esm-framework', () => ({
   ...jest.requireActual('@openmrs/esm-framework'),
   useConfig: jest.fn().mockReturnValue({
-    formsList: {
-      admissionRequestFormUuid: 'test-admission-form-uuid',
-    },
+    admissionRequestFormUuid: 'test-admission-form-uuid',
   }),
+
   formatDatetime: jest.fn().mockReturnValue('2023-10-16 10:30 AM'),
   useLayoutType: jest.fn().mockReturnValue('desktop'),
   isDesktop: jest.fn().mockReturnValue(true),
@@ -33,7 +31,7 @@ jest.mock('@openmrs/esm-framework', () => ({
 const mockMutate = jest.fn();
 const patientUuid = 'test-patient-uuid';
 
-const mockAdmissionRequestData: AdmissionRequestType[] = [
+const mockAdmissionRequestData: Array<InpatientRequest> = [
   {
     patient: {
       uuid: 'test-patient-uuid',
@@ -42,7 +40,7 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
         age: 35,
         dead: false,
         display: 'John Doe',
-        causeOfDeath: '',
+        causeOfDeath: {} as Person['causeOfDeath'],
         gender: 'M',
         deathDate: '',
         attributes: [],
@@ -92,6 +90,7 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
         uuid: 'test-visit-uuid',
         startDatetime: '2023-10-16T10:00:00.000+0000',
         encounters: [],
+        visitType: undefined,
       },
       encounterProviders: [],
       diagnoses: [],
@@ -102,11 +101,22 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
       concept: { uuid: 'test-concept-uuid' },
       value: null,
       obsDatetime: '2023-10-16T10:30:00.000+0000',
+      person: undefined,
+      accessionNumber: '',
+      obsGroup: undefined,
+      valueCodedName: undefined,
+      groupMembers: [],
+      comment: '',
+      location: undefined,
+      order: undefined,
+      encounter: undefined,
+      voided: false,
     },
     visit: {
       uuid: 'test-visit-uuid',
       startDatetime: '2023-10-16T10:00:00.000+0000',
       encounters: [],
+      visitType: undefined,
     },
   },
   {
@@ -117,7 +127,7 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
         age: 42,
         dead: false,
         display: 'Jane Smith',
-        causeOfDeath: '',
+        causeOfDeath: {} as Person['causeOfDeath'],
         gender: 'F',
         deathDate: '',
         attributes: [],
@@ -167,6 +177,7 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
         uuid: 'test-visit-uuid-2',
         startDatetime: '2023-10-15T14:00:00.000+0000',
         encounters: [],
+        visitType: undefined,
       },
       encounterProviders: [],
       diagnoses: [],
@@ -177,11 +188,22 @@ const mockAdmissionRequestData: AdmissionRequestType[] = [
       concept: { uuid: 'test-concept-uuid' },
       value: null,
       obsDatetime: '2023-10-15T14:30:00.000+0000',
+      person: undefined,
+      accessionNumber: '',
+      obsGroup: undefined,
+      valueCodedName: undefined,
+      groupMembers: [],
+      comment: '',
+      location: undefined,
+      order: undefined,
+      encounter: undefined,
+      voided: false,
     },
     visit: {
       uuid: 'test-visit-uuid-2',
       startDatetime: '2023-10-15T14:00:00.000+0000',
       encounters: [],
+      visitType: undefined,
     },
   },
 ];
@@ -233,7 +255,7 @@ describe('AdmissionRequest', () => {
     render(<AdmissionRequest patientUuid={patientUuid} />);
 
     // Check for the header title
-    expect(screen.getByText(/Admission Request/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: /admission request/i })).toBeInTheDocument();
     // Check for the empty state button
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
