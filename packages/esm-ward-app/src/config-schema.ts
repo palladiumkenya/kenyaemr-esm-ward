@@ -423,6 +423,11 @@ export const configSchema: ConfigSchema = {
       },
     ],
   },
+  inPatientVisitTypeUuid: {
+    _type: Type.String,
+    _description: 'The visit type uuid for in-patient',
+    _default: 'a73e2ac6-263b-47fc-99fc-e0f2c09fc914',
+  },
 };
 
 export interface WardConfigObject {
@@ -470,6 +475,7 @@ export interface WardConfigObject {
   doctorsNoteEncounterType: string;
   admissionRequestFormUuid: string;
   inPatientForms: Array<{ label: string; uuid: string; hideExpression: string }>;
+  inPatientVisitTypeUuid: string;
 }
 
 export interface PendingItemsElementConfig {
