@@ -23,7 +23,7 @@ type InpatientDetailViewProps = {
 const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
   const { isLoading: isLoadingPatient, patient, error } = usePatient(patientUuid);
   const { isLoadingEmrConfiguration, emrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
-  const { isLoading: isLoadingActiveVisit, error: currVisistError } = useVisit(patientUuid);
+  const { isLoading: isLoadingActiveVisit, error: currVisistError, currentVisit } = useVisit(patientUuid);
   const { t } = useTranslation();
   if (isLoadingActiveVisit || isLoadingEmrConfiguration || isLoadingPatient) {
     return <DataTableSkeleton />;
@@ -35,6 +35,20 @@ const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
         error={error ?? errorFetchingEmrConfiguration ?? currVisistError}
         headerTitle={t('inpatientdetails', 'Inpatient Details')}
       />
+    );
+  }
+
+  if (!currentVisit) {
+    return (
+      <Layer>
+        <CardHeader title={t('inpatientdetails', 'Inpatient Details')}>
+          <></>
+        </CardHeader>
+        <Tile className={styles.patientNotAdmitted}>
+          <EmptyDataIllustration />
+          <p>{t('noActiveVisit', 'This Patient Not currently admitted to ward')}</p>;
+        </Tile>
+      </Layer>
     );
   }
 
