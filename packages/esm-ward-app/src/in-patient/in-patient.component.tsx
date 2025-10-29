@@ -19,7 +19,7 @@ const InPatient: React.FC<InPatientProps> = ({ patientUuid }) => {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <AdmissionRequest patientUuid={patientUuid} />;
+          <AdmissionRequest patientUuid={patientUuid} />
         </TabPanel>
         <TabPanel>
           <InpatientDetailView patientUuid={patientUuid} />
