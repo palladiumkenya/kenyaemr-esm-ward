@@ -48,11 +48,12 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient, emrConf
     if (!currentVisit) {
       return launchStartVisitPrompt();
     }
+    const filledFormEncounter = currentVisit?.encounters?.find((en) => en?.form?.uuid === form.uuid);
     launchWorkspace('patient-form-entry-workspace', {
       workspaceTitle: form.label,
       mutateForm: () => {},
       formInfo: {
-        encounterUuid: '',
+        encounterUuid: filledFormEncounter?.uuid ?? '',
         formUuid: form.uuid,
         additionalProps: {},
       },

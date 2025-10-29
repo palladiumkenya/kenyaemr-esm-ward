@@ -3,6 +3,7 @@ import {
   ErrorState,
   formatDatetime,
   parseDate,
+  useConfig,
   useEmrConfiguration,
   usePatient,
   useVisit,
@@ -15,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useAdmissionLocation } from '../hooks/useAdmissionLocation';
 import InpatientForms from './inpatient-forms.component';
 import styles from './inpatient.scss';
+import { type WardConfigObject } from '../config-schema';
 
 type InpatientDetailViewProps = {
   patientUuid: string;
@@ -23,7 +25,8 @@ type InpatientDetailViewProps = {
 const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
   const { isLoading: isLoadingPatient, patient, error } = usePatient(patientUuid);
   const { isLoadingEmrConfiguration, emrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
-  const { isLoading: isLoadingActiveVisit, error: currVisistError } = useVisit(patientUuid);
+  const { isLoading: isLoadingActiveVisit, error: currVisistError, currentVisit } = useVisit(patientUuid);
+  const { inPatientVisitTypeUuid } = useConfig<WardConfigObject>();
   const { t } = useTranslation();
   if (isLoadingActiveVisit || isLoadingEmrConfiguration || isLoadingPatient) {
     return <DataTableSkeleton />;
@@ -35,6 +38,20 @@ const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
         error={error ?? errorFetchingEmrConfiguration ?? currVisistError}
         headerTitle={t('inpatientdetails', 'Inpatient Details')}
       />
+    );
+  }
+
+  if (!currentVisit || currentVisit?.visitType?.uuid !== inPatientVisitTypeUuid) {
+    return (
+      <Layer>
+        <CardHeader title={t('inpatientdetails', 'Inpatient Details')}>
+          <></>
+        </CardHeader>
+        <Tile className={styles.patientNotAdmitted}>
+          <EmptyDataIllustration />
+          <p>{t('noActiveVisit', 'This Patient Not currently admitted to ward')}</p>
+        </Tile>
+      </Layer>
     );
   }
 

@@ -402,7 +402,7 @@ export const configSchema: ConfigSchema = {
         label: 'Doctors Note',
       },
       {
-        uuid: '43dacebf-2412-44b6-b55a-63aff5b02fcd',
+        uuid: '07dc609f-e607-43d6-9dc3-8bd405c4226a',
         label: 'Post Delivery',
       },
       {
@@ -418,10 +418,15 @@ export const configSchema: ConfigSchema = {
         label: 'Fluid Intake',
       },
       {
-        uuid: 'cd65f1dd-0047-4449-9c38-0710a7214c52',
+        uuid: '3efe6966-a011-4d24-aa43-d3051bfbb8e3',
         label: 'Initial Nursing Cardex',
       },
     ],
+  },
+  inPatientVisitTypeUuid: {
+    _type: Type.String,
+    _description: 'The visit type uuid for in-patient',
+    _default: 'a73e2ac6-263b-47fc-99fc-e0f2c09fc914',
   },
 };
 
@@ -470,6 +475,7 @@ export interface WardConfigObject {
   doctorsNoteEncounterType: string;
   admissionRequestFormUuid: string;
   inPatientForms: Array<{ label: string; uuid: string; hideExpression: string }>;
+  inPatientVisitTypeUuid: string;
 }
 
 export interface PendingItemsElementConfig {
