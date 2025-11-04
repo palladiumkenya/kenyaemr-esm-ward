@@ -436,6 +436,7 @@ export const configSchema: ConfigSchema = {
         tags: [
           { uuid: 'dab3c2bb-0b0b-4ebd-8f99-3ad44996d311', tag: 'Antenantal Ward' },
           { uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' },
+          { uuid: '473001b4-5a6e-4e2e-b39c-f54edea89c6f', tag: 'Postnatal Ward' },
         ],
       },
       {
