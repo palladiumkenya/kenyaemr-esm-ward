@@ -382,44 +382,71 @@ export const configSchema: ConfigSchema = {
       {
         label: 'Cardex Nursing Plan',
         uuid: '1f81d5e2-3569-40cf-bbb9-361a53ba409b',
+        tags: [],
       },
       {
         label: 'IPD Procedure Form',
         uuid: '2b9c2b94-0b03-416a-b312-eef49b42f72c',
+        tags: [],
       },
       {
         label: 'Newborn Unit Admission ',
         uuid: '5b0a08f5-87c1-40cc-8c09-09c33b44523d',
         hideExpression: 'ageInDays < 28',
+        tags: [],
       },
       {
         label: 'Partograph Form',
         uuid: '3791e5b7-2cdc-44fc-982b-a81135367c96',
-        hideExpression: 'age >= 10 && gender === "female"',
+        tags: [{ uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' }],
       },
       {
         uuid: '87379b0a-738b-4799-9736-cdac614cee2a',
         label: 'Doctors Note',
-      },
-      {
-        uuid: '07dc609f-e607-43d6-9dc3-8bd405c4226a',
-        label: 'Post Delivery',
+        tags: [],
       },
       {
         uuid: 'ac043326-c5f0-4d11-9e6f-f7266b3f3859',
         label: 'Post Operation',
+        tags: [],
       },
       {
         uuid: 'a14824ca-29af-4d37-b9da-6bdee39f8808',
         label: 'Pre-Operation Checklist',
+        tags: [],
       },
       {
         uuid: 'b4bfa7a3-f6ed-4339-a4ec-b076463c0696',
         label: 'Fluid Intake',
+        tags: [],
       },
       {
         uuid: '3efe6966-a011-4d24-aa43-d3051bfbb8e3',
         label: 'Initial Nursing Cardex',
+        tags: [],
+      },
+      {
+        uuid: '57b8bb54-321f-4b94-bba5-58850527bfd6',
+        label: 'Maternity inpatient form',
+        tags: [{ uuid: 'dab3c2bb-0b0b-4ebd-8f99-3ad44996d311', tag: 'Antenantal Ward' }],
+      },
+      {
+        uuid: '98a781d2-b777-4756-b4c9-c9b0deb3483c',
+        label: 'Inpatient Discharge form',
+        tags: [
+          { uuid: 'dab3c2bb-0b0b-4ebd-8f99-3ad44996d311', tag: 'Antenantal Ward' },
+          { uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' },
+        ],
+      },
+      {
+        uuid: '496c7cc3-0eea-4e84-a04c-2292949e2f7f',
+        label: 'Delivery form',
+        tags: [{ uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' }],
+      },
+      {
+        uuid: '07dc609f-e607-43d6-9dc3-8bd405c4226a',
+        label: 'Post Delivery form',
+        tags: [{ uuid: '473001b4-5a6e-4e2e-b39c-f54edea89c6f', tag: 'Postnatal Ward' }], // Postnatal and Maternity tags
       },
     ],
   },
@@ -474,7 +501,12 @@ export interface WardConfigObject {
   clinicalConsultationEncounterType: string;
   doctorsNoteEncounterType: string;
   admissionRequestFormUuid: string;
-  inPatientForms: Array<{ label: string; uuid: string; hideExpression: string }>;
+  inPatientForms: Array<{
+    label: string;
+    uuid: string;
+    hideExpression: string;
+    tags: Array<{ uuid: string; tag: string }>;
+  }>;
   inPatientVisitTypeUuid: string;
 }
 

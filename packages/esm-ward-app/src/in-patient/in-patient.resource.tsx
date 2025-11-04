@@ -1,7 +1,7 @@
-import { type Encounter, openmrsFetch, restBaseUrl, useConfig } from '@openmrs/esm-framework';
+import { type Encounter, type FetchResponse, openmrsFetch, restBaseUrl, useConfig } from '@openmrs/esm-framework';
 import useSWR from 'swr';
-import type { InpatientRequest as AdmissionRequest } from '../types';
 import type { WardConfigObject } from '../config-schema';
+import type { InpatientRequest as AdmissionRequest } from '../types';
 
 export const usePatientEncounters = (patientUuid: string) => {
   const { inPatientForms } = useConfig<WardConfigObject>();
@@ -52,5 +52,22 @@ export const useAdmissionRequest = (patientUuid: string) => {
     isLoading: isLoading,
     error: error,
     mutate: mutate,
+  };
+};
+
+type Tag = { uuid: string; display: string; name: string; description: string };
+
+export const useAdmissionLocationTags = (locationUuid?: string) => {
+  const rep = 'custom:(tags:(uuid,display,name,description))';
+  const url = `${restBaseUrl}/location/${locationUuid}?v=${rep}`;
+  const { data, error, isLoading, mutate } = useSWR<FetchResponse<{ tags: Array<Tag> }>>(
+    locationUuid ? url : null,
+    openmrsFetch,
+  );
+  return {
+    tags: data?.data?.tags ?? [],
+    isLoading,
+    error,
+    mutate,
   };
 };
