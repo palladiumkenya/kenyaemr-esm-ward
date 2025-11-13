@@ -287,7 +287,7 @@ export const configSchema: ConfigSchema = {
   admissionRequestFormUuid: {
     _description: 'Admission request form uuid',
     _type: Type.String,
-    _default: 'c3496cb0-ab42-4d42-9ec7-d09b9f209c85',
+    _default: '0bae7646-b079-4cbb-8130-b24274fc16f7',
   },
   conceptUuidForWardAdmission: {
     _description: 'Concept UUID for ward admission',
