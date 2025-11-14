@@ -88,7 +88,7 @@ const AdmitPatientFormWorkspace: React.FC<WardPatientWorkspaceProps> = ({
     setIsSubmitting(true);
     const bedSelected = beds.find((bed) => bed.bedId === values.bedId);
     const obs = formValuesToObs(values, config);
-    admitPatient(patient, dispositionType, visit.uuid, obs, values.admissionDate)
+    admitPatient(patient, dispositionType, visit.uuid, obs, values.admissionDate, config.admissionFormUuid)
       .then(
         async (response) => {
           if (response.ok) {
