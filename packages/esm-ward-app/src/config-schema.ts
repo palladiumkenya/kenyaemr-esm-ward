@@ -289,6 +289,11 @@ export const configSchema: ConfigSchema = {
     _type: Type.String,
     _default: '0bae7646-b079-4cbb-8130-b24274fc16f7',
   },
+  admissionFormUuid: {
+    _description: 'Admission form uuid',
+    _type: Type.String,
+    _default: '49f3686d-b83c-4263-a5a1-89040f643a78',
+  },
   conceptUuidForWardAdmission: {
     _description: 'Concept UUID for ward admission',
     _type: Type.Object,
@@ -502,6 +507,7 @@ export interface WardConfigObject {
   clinicalConsultationEncounterType: string;
   doctorsNoteEncounterType: string;
   admissionRequestFormUuid: string;
+  admissionFormUuid: string;
   inPatientForms: Array<{
     label: string;
     uuid: string;
