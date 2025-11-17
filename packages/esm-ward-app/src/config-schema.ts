@@ -301,7 +301,7 @@ export const configSchema: ConfigSchema = {
       paymentMethod: 'ffd8e033-a286-42b4-89d5-c6d6506d3161',
       mpesaPaymentMethod: '9b24f997-6582-46b5-8f58-924b0e39ad9a',
       cashPaymentMethod: 'fc894152-07be-4e77-9dac-2a164e400a13',
-      insurancePaymentMethod: '95d2b358-ef3b-4a41-9215-06bfc9ef107e',
+      insurancePaymentMethod: '159356AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       otherInsuaranceType: '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       insuranceOtherSpecify: '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       primaryDoctor: '2b537713-298c-4b60-83c3-8006ea622d70',
