@@ -93,6 +93,7 @@
   "motherChildBedShare": "Mother / Child",
   "mpesa": "MPESA",
   "nextPage": "Next page",
+  "noActiveVisit": "This Patient Not currently admitted to ward",
   "noBed": "No bed",
   "noBedsConfigured": "No beds configured for this location",
   "noBedsConfiguredForLocation": "No beds configured for {{location}} location",

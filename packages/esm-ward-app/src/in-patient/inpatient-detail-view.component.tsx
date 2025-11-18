@@ -1,23 +1,14 @@
 import { DataTableSkeleton, InlineLoading, Layer, Tile } from '@carbon/react';
-import {
-  ErrorState,
-  formatDatetime,
-  parseDate,
-  useConfig,
-  useEmrConfiguration,
-  usePatient,
-  useVisit,
-  type EmrApiConfigurationResponse,
-} from '@openmrs/esm-framework';
+import { ErrorState, formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration } from '@openmrs/esm-patient-common-lib/src';
 import dayjs from 'dayjs';
 import React, { useMemo, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { type WardConfigObject } from '../config-schema';
 import { useAdmissionLocation } from '../hooks/useAdmissionLocation';
+import useCurrentPatientAdmissionEncounter from '../hooks/useCurrentPatientAdmissionEncounter';
 import InpatientForms from './inpatient-forms.component';
 import styles from './inpatient.scss';
-import { type WardConfigObject } from '../config-schema';
-import useCurrentPatientAdmissionEncounter from '../hooks/useCurrentPatientAdmissionEncounter';
 
 type InpatientDetailViewProps = {
   patientUuid: string;
@@ -26,11 +17,9 @@ type InpatientDetailViewProps = {
 const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
   const { isLoading: isLoadingPatient, patient, error } = usePatient(patientUuid);
   const {
-    admissionEncounter,
     isLoading: isLoadingAdmissionEncounter,
     error: errorAdmissionEncounter,
     currentVisit,
-    isPatientAdmitted,
   } = useCurrentPatientAdmissionEncounter(patientUuid);
   const { inPatientVisitTypeUuid } = useConfig<WardConfigObject>();
   const { t } = useTranslation();

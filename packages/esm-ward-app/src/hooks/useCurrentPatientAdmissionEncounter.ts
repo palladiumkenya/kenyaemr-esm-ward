@@ -20,8 +20,9 @@ const useCurrentPatientAdmissionEncounter = (patientUuid: string) => {
   const { currentVisit, error: visitError, isLoading: isLoadingVisit, mutate: mutateVisit } = useVisit(patientUuid);
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
 
-  const admissionEncounters = useMemo(() => {
-    return currentVisit?.encounters?.filter(
+  // Admission or Tranfer encounter depending on wether patient was transfered or admitted directly
+  const latestAdmisionEncounter = useMemo(() => {
+    return currentVisit?.encounters?.find(
       (encounter) =>
         encounter.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid ||
         encounter.encounterType.uuid === emrConfiguration?.transferWithinHospitalEncounterType?.uuid,
@@ -35,11 +36,11 @@ const useCurrentPatientAdmissionEncounter = (patientUuid: string) => {
   }, [currentVisit, emrConfiguration]);
 
   const isPatientAdmitted = useMemo(() => {
-    return admissionEncounters?.[0] && !dischargeEncounter;
-  }, [admissionEncounters, dischargeEncounter]);
+    return latestAdmisionEncounter && !dischargeEncounter;
+  }, [latestAdmisionEncounter, dischargeEncounter]);
 
   return {
-    admissionEncounter: admissionEncounters?.[0],
+    admissionEncounter: latestAdmisionEncounter,
     isLoading: isLoadingVisit || isLoadingEmrConfiguration,
     error: visitError || errorFetchingEmrConfiguration,
     mutate: mutateVisit,
