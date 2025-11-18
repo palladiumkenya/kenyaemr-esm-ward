@@ -1,32 +1,25 @@
-import { ComboButton, Dropdown, MenuItem } from '@carbon/react';
-import React, { type FC, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  type EmrApiConfigurationResponse,
-  evaluateAsBoolean,
-  launchWorkspace,
-  useConfig,
-  useVisit,
-} from '@openmrs/esm-framework';
+import { ComboButton, MenuItem } from '@carbon/react';
+import { evaluateAsBoolean, launchWorkspace, useConfig } from '@openmrs/esm-framework';
 import { launchStartVisitPrompt } from '@openmrs/esm-patient-common-lib';
 import dayjs from 'dayjs';
+import React, { type FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type WardConfigObject } from '../config-schema';
+import useCurrentPatientAdmissionEncounter from '../hooks/useCurrentPatientAdmissionEncounter';
 import { useAdmissionLocationTags } from './in-patient.resource';
 type InpatientFormsProps = {
   patientUuid: string;
   patient: fhir.Patient;
-  emrConfiguration: EmrApiConfigurationResponse;
 };
-const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient, emrConfiguration }) => {
+const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient }) => {
   const { t } = useTranslation();
-  const { currentVisit } = useVisit(patientUuid);
-  const admissionLocation = useMemo(
-    () =>
-      currentVisit?.encounters?.find((en) => en.encounterType?.uuid === emrConfiguration?.admissionEncounterType?.uuid)
-        ?.location,
-    [currentVisit?.encounters, emrConfiguration?.admissionEncounterType?.uuid],
-  );
-  const { error: tagsError, isLoading: isloadingTags, tags } = useAdmissionLocationTags(admissionLocation?.uuid);
+  const { admissionEncounter, isLoading, error, currentVisit, isPatientAdmitted } =
+    useCurrentPatientAdmissionEncounter(patientUuid);
+  const {
+    error: tagsError,
+    isLoading: isloadingTags,
+    tags,
+  } = useAdmissionLocationTags(admissionEncounter?.location?.uuid);
 
   const { inPatientForms } = useConfig<WardConfigObject>();
   const filteredForms = useMemo(
@@ -51,16 +44,6 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient, emrConf
     [inPatientForms, patient.birthDate, patient.gender, tags],
   );
 
-  const isPatientAdmitted = useMemo(() => {
-    const hasAdmissionEncounter = currentVisit.encounters.some(
-      (encounter) => encounter.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
-    );
-    const hasDischargeEncounter = currentVisit.encounters.some(
-      (encounter) => encounter.encounterType.uuid === emrConfiguration?.exitFromInpatientEncounterType?.uuid,
-    );
-    return hasAdmissionEncounter && !hasDischargeEncounter;
-  }, [emrConfiguration, currentVisit]);
-
   const handleLaunchForm = (form: { label: string; uuid: string }) => {
     if (!currentVisit) {
       return launchStartVisitPrompt();
@@ -81,7 +64,8 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient, emrConf
     return null;
   }
 
-  if (isloadingTags) return null;
+  if (isloadingTags || isLoading) return null;
+
   return (
     <ComboButton size="sm" label={t('inPatientForms', 'In-Patient Forms')}>
       {filteredForms.map((form) => (
