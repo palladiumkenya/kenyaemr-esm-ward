@@ -81,23 +81,11 @@ const AdmitPatientButton: React.FC<AdmitPatientButtonProps> = ({
 
   const disabledButton = isLoadingEmrConfiguration || errorFetchingEmrConfiguration || disabled;
 
-  if (component === 'menu')
-    return (
-      <OverflowMenuItem
-        itemText={
-          dispositionType == 'ADMIT' || disabledButton
-            ? t('admitPatient', 'Admit patient')
-            : t('transferPatient', 'Transfer patient')
-        }
-        onClick={onAdmit}
-      />
-    );
+  if (component === 'menu') return <OverflowMenuItem itemText={t('admitPatient', 'Admit patient')} onClick={onAdmit} />;
 
   return (
     <Button kind="ghost" renderIcon={ArrowRightIcon} size={responsiveSize} disabled={disabledButton} onClick={onAdmit}>
-      {dispositionType == 'ADMIT' || disabledButton
-        ? t('admitPatient', 'Admit patient')
-        : t('transferPatient', 'Transfer patient')}
+      {t('admitPatient', 'Admit patient')}
     </Button>
   );
 };
