@@ -1,22 +1,14 @@
 import { DataTableSkeleton, InlineLoading, Layer, Tile } from '@carbon/react';
-import {
-  ErrorState,
-  formatDatetime,
-  parseDate,
-  useConfig,
-  useEmrConfiguration,
-  usePatient,
-  useVisit,
-  type EmrApiConfigurationResponse,
-} from '@openmrs/esm-framework';
+import { ErrorState, formatDatetime, parseDate, useConfig, usePatient } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration } from '@openmrs/esm-patient-common-lib/src';
 import dayjs from 'dayjs';
 import React, { useMemo, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { type WardConfigObject } from '../config-schema';
 import { useAdmissionLocation } from '../hooks/useAdmissionLocation';
+import useCurrentPatientAdmissionEncounter from '../hooks/useCurrentPatientAdmissionEncounter';
 import InpatientForms from './inpatient-forms.component';
 import styles from './inpatient.scss';
-import { type WardConfigObject } from '../config-schema';
 
 type InpatientDetailViewProps = {
   patientUuid: string;
@@ -24,20 +16,20 @@ type InpatientDetailViewProps = {
 
 const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
   const { isLoading: isLoadingPatient, patient, error } = usePatient(patientUuid);
-  const { isLoadingEmrConfiguration, emrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
-  const { isLoading: isLoadingActiveVisit, error: currVisistError, currentVisit } = useVisit(patientUuid);
+  const {
+    isLoading: isLoadingAdmissionEncounter,
+    error: errorAdmissionEncounter,
+    currentVisit,
+  } = useCurrentPatientAdmissionEncounter(patientUuid);
   const { inPatientVisitTypeUuid } = useConfig<WardConfigObject>();
   const { t } = useTranslation();
-  if (isLoadingActiveVisit || isLoadingEmrConfiguration || isLoadingPatient) {
+  if (isLoadingAdmissionEncounter || isLoadingPatient) {
     return <DataTableSkeleton />;
   }
 
-  if (error || errorFetchingEmrConfiguration || currVisistError) {
+  if (error || errorAdmissionEncounter) {
     return (
-      <ErrorState
-        error={error ?? errorFetchingEmrConfiguration ?? currVisistError}
-        headerTitle={t('inpatientdetails', 'Inpatient Details')}
-      />
+      <ErrorState error={error ?? errorAdmissionEncounter} headerTitle={t('inpatientdetails', 'Inpatient Details')} />
     );
   }
 
@@ -57,7 +49,7 @@ const InpatientDetailView: FC<InpatientDetailViewProps> = ({ patientUuid }) => {
 
   return (
     <div>
-      <PatientAdmitted patientUuid={patientUuid} patient={patient} emrConfiguration={emrConfiguration} />
+      <PatientAdmitted patientUuid={patientUuid} patient={patient} />
     </div>
   );
 };
@@ -67,34 +59,24 @@ export default InpatientDetailView;
 const PatientAdmitted: FC<{
   patientUuid: string;
   patient: fhir.Patient;
-  emrConfiguration: EmrApiConfigurationResponse;
-}> = ({ emrConfiguration, patient, patientUuid }) => {
-  const { currentVisit } = useVisit(patientUuid);
+}> = ({ patient, patientUuid }) => {
+  const { admissionEncounter, isPatientAdmitted } = useCurrentPatientAdmissionEncounter(patientUuid);
   const { t } = useTranslation();
 
-  const { isPatientAdmitted, dateOfAdmission, dayasInWard, ward } = useMemo(() => {
-    const hasAdmissionEncounter = currentVisit.encounters.find(
-      (encounter) => encounter.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
-    );
-    const hasDischargeEncounter = currentVisit.encounters.find(
-      (encounter) => encounter.encounterType.uuid === emrConfiguration?.exitFromInpatientEncounterType?.uuid,
-    );
-
-    const dateOfAdmission = hasAdmissionEncounter?.encounterDatetime
-      ? parseDate(hasAdmissionEncounter?.encounterDatetime)
+  const { dateOfAdmission, dayasInWard } = useMemo(() => {
+    const dateOfAdmission = admissionEncounter?.encounterDatetime
+      ? parseDate(admissionEncounter?.encounterDatetime)
       : null;
 
     const today = dayjs().startOf('day');
     const dayasInWard = dateOfAdmission ? Math.abs(today.diff(dateOfAdmission, 'days')) : 0;
 
     return {
-      isPatientAdmitted: hasAdmissionEncounter && !hasDischargeEncounter,
       dateOfAdmission,
       dayasInWard,
-      ward: hasAdmissionEncounter?.location,
     };
-  }, [emrConfiguration, currentVisit]);
-  const { isLoading, admissionLocation, error } = useAdmissionLocation(undefined, ward?.uuid);
+  }, [admissionEncounter?.encounterDatetime]);
+  const { isLoading, admissionLocation, error } = useAdmissionLocation(undefined, admissionEncounter?.location?.uuid);
   const bedLayout = useMemo(() => {
     return admissionLocation?.bedLayouts?.find((layout) => layout.patients?.some((pat) => pat?.uuid === patientUuid));
   }, [admissionLocation, patientUuid]);
@@ -115,7 +97,7 @@ const PatientAdmitted: FC<{
   return (
     <Layer>
       <CardHeader title={t('admissionDetail', 'Admission Details')}>
-        <InpatientForms patientUuid={patientUuid} patient={patient} emrConfiguration={emrConfiguration} />
+        <InpatientForms patientUuid={patientUuid} patient={patient} />
       </CardHeader>
       <div className={styles.detailsContainer}>
         <Tile>
@@ -128,7 +110,7 @@ const PatientAdmitted: FC<{
         </Tile>
         <Tile>
           <strong>{t('ward', 'Ward')}</strong>
-          <p>{ward?.display}</p>
+          <p>{admissionEncounter?.location?.display}</p>
         </Tile>
         <Tile>
           {isLoading ? (

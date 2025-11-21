@@ -202,7 +202,7 @@ describe('CreateAdmissionEncounterWorkspace', () => {
     renderCreateAdmissionEncounterWorkspace(mockPatientAlice.uuid);
     expect(screen.getByText(mockPatientAlice.person?.preferredName?.display)).toBeInTheDocument();
     expect(screen.getByText('Patient currently admitted to ' + mockLocationMosoriot.display)).toBeInTheDocument();
-    const admitPatientButton = screen.getByRole('button', { name: /transfer patient/i });
+    const admitPatientButton = screen.getByRole('button', { name: /admit patient/i });
     expect(admitPatientButton).toBeEnabled();
 
     await user.click(admitPatientButton);

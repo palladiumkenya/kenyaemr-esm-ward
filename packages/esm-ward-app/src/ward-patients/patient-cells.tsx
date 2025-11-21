@@ -47,7 +47,9 @@ export const PatientAdmissionDateCell: FC<PatientAdmissionCellProps> = ({ encoun
 
   const admissionDate = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
-      (e) => e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
+      (e) =>
+        e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid ||
+        e.encounterType.uuid === emrConfiguration?.transferWithinHospitalEncounterType?.uuid,
     );
     if (!admisionEncounter || !admisionEncounter.encounterDatetime) return '--';
     return formatDatetime(parseDate(admisionEncounter.encounterDatetime));
@@ -64,7 +66,9 @@ export const PatientDayInWardCell: FC<PatientAdmissionCellProps> = ({ encounterU
 
   const daysInWard = useMemo(() => {
     const admisionEncounter = encounter?.visit?.encounters?.find(
-      (e) => e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid,
+      (e) =>
+        e.encounterType.uuid === emrConfiguration?.admissionEncounterType?.uuid ||
+        e.encounterType.uuid === emrConfiguration?.transferWithinHospitalEncounterType?.uuid,
     );
     if (!admisionEncounter || !admisionEncounter.encounterDatetime) return '--';
     const dischargeEncounter = encounter?.visit?.encounters?.find((e) => e.uuid === encounterUuid);
