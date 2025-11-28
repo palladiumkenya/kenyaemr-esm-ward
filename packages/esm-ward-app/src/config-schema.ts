@@ -401,11 +401,6 @@ export const configSchema: ConfigSchema = {
         tags: [],
       },
       {
-        label: 'Partograph Form',
-        uuid: '3791e5b7-2cdc-44fc-982b-a81135367c96',
-        tags: [{ uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' }],
-      },
-      {
         uuid: '87379b0a-738b-4799-9736-cdac614cee2a',
         label: 'Doctors Note',
         tags: [],

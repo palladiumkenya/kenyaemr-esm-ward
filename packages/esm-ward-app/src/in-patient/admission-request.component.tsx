@@ -81,9 +81,7 @@ const AdmissionRequest: React.FC<AdmissionRequestProps> = ({ patientUuid }) => {
   return (
     <div>
       <CardHeader title={t('admissionRequest', 'Admission Request')}>
-        <Button renderIcon={Add} onClick={handleLaunchAdmissionRequestForm} kind="ghost">
-          {t('add', 'Add')}
-        </Button>
+        <></>
       </CardHeader>
       <DataTable size={controlSize} rows={rows} headers={headers}>
         {({ rows, headers, getTableProps, getHeaderProps, getRowProps, getCellProps }) => (

@@ -309,45 +309,6 @@ describe('AdmissionRequest', () => {
     expect(screen.getAllByText('ADMIT')).toHaveLength(2);
   });
 
-  it('should render Add button in header when data is available', () => {
-    mockUseAdmissionRequest.mockReturnValue({
-      admissionRequest: mockAdmissionRequestData,
-      isLoading: false,
-      error: undefined,
-      mutate: mockMutate,
-    });
-
-    render(<AdmissionRequest patientUuid={patientUuid} />);
-
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    expect(addButton).toBeInTheDocument();
-  });
-
-  it('should launch admission request form when clicking Add button', async () => {
-    const user = userEvent.setup();
-
-    mockUseAdmissionRequest.mockReturnValue({
-      admissionRequest: mockAdmissionRequestData,
-      isLoading: false,
-      error: undefined,
-      mutate: mockMutate,
-    });
-
-    render(<AdmissionRequest patientUuid={patientUuid} />);
-
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    await user.click(addButton);
-
-    expect(mockLaunchWorkspace).toHaveBeenCalledWith('patient-form-entry-workspace', {
-      workspaceTitle: 'Admission Request',
-      mutateForm: mockMutate,
-      formInfo: {
-        formUuid: 'test-admission-form-uuid',
-        encounterUuid: '',
-      },
-    });
-  });
-
   test('should format dates correctly in the table', () => {
     mockUseAdmissionRequest.mockReturnValue({
       admissionRequest: mockAdmissionRequestData,
