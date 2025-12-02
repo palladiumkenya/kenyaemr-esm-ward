@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Add } from '@carbon/react/icons';
 import type { WardConfigObject } from '../config-schema';
 import { useAdmissionRequest } from './in-patient.resource';
+import useCurrentPatientAdmissionEncounter from '../hooks/useCurrentPatientAdmissionEncounter';
 
 type AdmissionRequestProps = {
   patientUuid: string;
@@ -28,6 +29,8 @@ const AdmissionRequest: React.FC<AdmissionRequestProps> = ({ patientUuid }) => {
   const controlSize = isDesktop(layout) ? 'sm' : 'md';
   const { admissionRequestFormUuid } = useConfig<WardConfigObject>();
   const { admissionRequest, isLoading, error, mutate } = useAdmissionRequest(patientUuid);
+  const { isPatientAdmitted } = useCurrentPatientAdmissionEncounter(patientUuid);
+
   const rows = useMemo(() => {
     return admissionRequest.map((admissionRequest) => ({
       id: admissionRequest.patient.uuid,
@@ -73,7 +76,7 @@ const AdmissionRequest: React.FC<AdmissionRequestProps> = ({ patientUuid }) => {
       <EmptyState
         displayText={t('admissionRequests', 'admission requests')}
         headerTitle={t('admissionRequest', 'Admission Request')}
-        launchForm={handleLaunchAdmissionRequestForm}
+        launchForm={isPatientAdmitted ? undefined : handleLaunchAdmissionRequestForm}
       />
     );
   }
