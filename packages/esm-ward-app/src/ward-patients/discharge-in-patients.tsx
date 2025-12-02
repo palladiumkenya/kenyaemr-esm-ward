@@ -3,6 +3,7 @@ import {
   OverflowMenu,
   OverflowMenuItem,
   Pagination,
+  Search,
   Table,
   TableBody,
   TableCell,
@@ -33,6 +34,7 @@ import { EmptyState } from './table-state-components';
 
 const DischargeInPatients = () => {
   const { t } = useTranslation();
+  const [search, setSearch] = useState('');
   const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
   const { bedLayouts, wardAdmittedPatientsWithBed, isLoading } = wardPatientGroupDetails ?? {};
   const { emrConfiguration, isLoadingEmrConfiguration, errorFetchingEmrConfiguration } = useEmrConfiguration();
@@ -86,7 +88,10 @@ const DischargeInPatients = () => {
   }, [bedLayouts, wardAdmittedPatientsWithBed, config]);
 
   const [pageSize, setPageSize] = useState(5);
-  const { paginated, results, totalPages, currentPage, goTo } = usePagination(patients, pageSize);
+  const searchResults = useMemo(() => {
+    return patients?.filter((pat) => pat?.patient?.person?.display?.toLowerCase().includes(search.toLowerCase()));
+  }, [patients, search]);
+  const { paginated, results, totalPages, currentPage, goTo } = usePagination(searchResults, pageSize);
   const { pageSizes } = usePaginationInfo(pageSize, totalPages, currentPage, results.length);
 
   const tableRows = useMemo(() => {
@@ -147,52 +152,55 @@ const DischargeInPatients = () => {
   if (!patients.length) return <EmptyState message={t('noDischargeInpatients', 'No Discharge in patients')} />;
 
   return (
-    <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
-      {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (
-        <TableContainer>
-          <Table {...getTableProps()} aria-label="sample table">
-            <TableHead>
-              <TableRow>
-                {headers.map((header) => (
-                  <TableHeader
-                    key={header.key}
-                    {...getHeaderProps({
-                      header,
-                    })}>
-                    {header.header}
-                  </TableHeader>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => {
-                return (
-                  <TableRow key={row.id} {...getRowProps({ row })}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id} {...getCellProps({ cell })}>
-                        {cell.value}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-          {paginated && !isLoading && (
-            <Pagination
-              page={currentPage}
-              pageSize={pageSize}
-              pageSizes={pageSizes}
-              totalItems={(patients ?? []).length}
-              onChange={({ page, pageSize }) => {
-                goTo(page);
-                setPageSize(pageSize);
-              }}
-            />
-          )}
-        </TableContainer>
-      )}
-    </DataTable>
+    <div>
+      <Search value={search} onChange={(e) => setSearch(e.target.value)} />
+      <DataTable rows={tableRows} headers={headers} isSortable useZebraStyles>
+        {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getCellProps }) => (
+          <TableContainer>
+            <Table {...getTableProps()} aria-label="sample table">
+              <TableHead>
+                <TableRow>
+                  {headers.map((header) => (
+                    <TableHeader
+                      key={header.key}
+                      {...getHeaderProps({
+                        header,
+                      })}>
+                      {header.header}
+                    </TableHeader>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => {
+                  return (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id} {...getCellProps({ cell })}>
+                          {cell.value}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            {paginated && !isLoading && (
+              <Pagination
+                page={currentPage}
+                pageSize={pageSize}
+                pageSizes={pageSizes}
+                totalItems={(patients ?? []).length}
+                onChange={({ page, pageSize }) => {
+                  goTo(page);
+                  setPageSize(pageSize);
+                }}
+              />
+            )}
+          </TableContainer>
+        )}
+      </DataTable>
+    </div>
   );
 };
 
