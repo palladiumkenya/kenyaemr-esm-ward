@@ -456,6 +456,11 @@ export const configSchema: ConfigSchema = {
     _description: 'The visit type uuid for in-patient',
     _default: 'a73e2ac6-263b-47fc-99fc-e0f2c09fc914',
   },
+  enableEditingOfFilledIPDForms: {
+    _type: Type.Boolean,
+    _description: 'Enable editing of filled IPD forms',
+    _default: false,
+  },
 };
 
 export interface WardConfigObject {
@@ -510,6 +515,7 @@ export interface WardConfigObject {
     tags: Array<{ uuid: string; tag: string }>;
   }>;
   inPatientVisitTypeUuid: string;
+  enableEditingOfFilledIPDForms: boolean;
 }
 
 export interface PendingItemsElementConfig {

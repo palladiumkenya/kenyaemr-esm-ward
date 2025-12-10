@@ -21,7 +21,7 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient }) => {
     tags,
   } = useAdmissionLocationTags(admissionEncounter?.location?.uuid);
 
-  const { inPatientForms } = useConfig<WardConfigObject>();
+  const { inPatientForms, enableEditingOfFilledIPDForms } = useConfig<WardConfigObject>();
   const filteredForms = useMemo(
     () =>
       inPatientForms.filter((form) => {
@@ -53,7 +53,7 @@ const InpatientForms: FC<InpatientFormsProps> = ({ patientUuid, patient }) => {
       workspaceTitle: form.label,
       mutateForm: () => {},
       formInfo: {
-        encounterUuid: filledFormEncounter?.uuid ?? '',
+        encounterUuid: enableEditingOfFilledIPDForms && filledFormEncounter?.uuid ? filledFormEncounter?.uuid : '',
         formUuid: form.uuid,
         additionalProps: {},
       },
