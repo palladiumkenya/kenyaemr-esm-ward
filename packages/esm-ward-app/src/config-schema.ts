@@ -398,7 +398,10 @@ export const configSchema: ConfigSchema = {
         label: 'Newborn Unit Admission ',
         uuid: '5b0a08f5-87c1-40cc-8c09-09c33b44523d',
         hideExpression: 'ageInDays < 28',
-        tags: [],
+        tags: [
+          { uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' },
+          { uuid: '473001b4-5a6e-4e2e-b39c-f54edea89c6f', tag: 'Postnatal Ward' },
+        ],
       },
       {
         uuid: '87379b0a-738b-4799-9736-cdac614cee2a',
@@ -434,7 +437,6 @@ export const configSchema: ConfigSchema = {
         uuid: '98a781d2-b777-4756-b4c9-c9b0deb3483c',
         label: 'Inpatient Discharge form',
         tags: [
-          { uuid: 'dab3c2bb-0b0b-4ebd-8f99-3ad44996d311', tag: 'Antenantal Ward' },
           { uuid: '7680b7ee-6880-450c-8b7e-2a748b6f9dc7', tag: 'Labour & Delivery Ward' },
           { uuid: '473001b4-5a6e-4e2e-b39c-f54edea89c6f', tag: 'Postnatal Ward' },
         ],

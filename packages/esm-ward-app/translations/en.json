@@ -1,5 +1,4 @@
 {
-  "add": "Add",
   "admissionDate": "Admission Date",
   "admissionDetail": "Admission Details",
   "admissionDetails": "Admission Details",
@@ -9,6 +8,7 @@
   "admissionRequests": "Admission requests",
   "admissionRequestsCount": "{{count}} admission request",
   "admissionRequestsCount_plural": "{{count}} admission request",
+  "admissions": "Admissions",
   "admissionType": "Admission Type",
   "admit": "Admit",
   "admitElsewhere": "Admit elsewhere",
@@ -160,7 +160,6 @@
   "timeSinceAdmission": "Admitted: {{timeSinceAdmission}}",
   "transfer": "Transfer",
   "transferElsewhere": "Transfer elsewhere",
-  "transferPatient": "Transfer patient",
   "transferRequest": "Transfer request",
   "transfers": "Transfers",
   "transferToDispositionLocation": "Transfer to {{location}}",
@@ -184,6 +183,5 @@
   "seconds_one": "{{count}} second",
   "seconds_other": "{{count}} seconds",
   "showingLocations_one": "{{start}}-{{end}} of {{count}} locations",
-  "showingLocations_other": "{{start}}-{{end}} of {{count}} locations",
-  "admissions": "Admissions"
+  "showingLocations_other": "{{start}}-{{end}} of {{count}} locations"
 }
