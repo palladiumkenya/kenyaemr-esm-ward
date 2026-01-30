@@ -19,9 +19,9 @@ const options = {
 };
 
 export const root = getAsyncLifecycle(() => import('./root.component'), options);
-
+// t("admissions", "Admissions")
 export const wardDashboardLink = getSyncLifecycle(
-  createDashboardLink({ name: 'ward', title: 'Admissions', icon: '' }),
+  createDashboardLink({ name: 'ward', title: 'admissions', icon: '' }),
   options,
 );
 
