@@ -119,5 +119,6 @@
   "unknown": "Unknown",
   "visitNoteSaved": "Patient note saved",
   "wardClinicalNotePlaceholder": "Write any notes here",
-  "wards": "Wards"
+  "wards": "Wards",
+  "admissions":"መግቢያዎች"           
 }

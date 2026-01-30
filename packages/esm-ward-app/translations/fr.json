@@ -174,5 +174,7 @@
   "seconds_one": "{{count}} seconde",
   "seconds_other": "{{count}} secondes",
   "showingLocations_one": "{{start}}-{{end}} sur {{count}} emplacements",
-  "showingLocations_other": "{{start}}-{{end}} sur {{count}} emplacements"
+  "showingLocations_other": "{{start}}-{{end}} sur {{count}} emplacements",
+    "admissions": "Admissions"
+
 }
